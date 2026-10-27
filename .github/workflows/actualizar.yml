@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["scripts/**", ".github/workflows/actualizar.yml"]
+    paths: ["scripts/**", "app.html", ".github/workflows/actualizar.yml"]
 
 permissions:
   contents: write
@@ -27,9 +27,11 @@ jobs:
       - run: pip install --quiet pillow
       - name: NBA, Basquetpass y fotos
         run: python scripts/actualizar.py
+      - name: Páginas para buscadores
+        run: python scripts/paginas.py
       - name: Guardar cambios
         run: |
-          git add data
+          git add -A data index.html sitemap.xml robots.txt fuentes */index.html
           if git diff --cached --quiet; then echo "sin cambios"; exit 0; fi
           # estado.json cambia siempre por la hora: si es lo único, no se sube (evita deploys de más)
           if [ "$(git diff --cached --name-only)" = "data/estado.json" ]; then echo "solo estado"; exit 0; fi

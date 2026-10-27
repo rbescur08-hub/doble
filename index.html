@@ -3,8 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Resultados, fixtures, tablas y dónde ver el básquet argentino y del mundo, en hora argentina.">
-<title>Doble · Básquet argentino</title>
+<meta name="description" content="Partidos de básquet de hoy y dónde verlos en Argentina: Liga Nacional, Liga Argentina, NBA, Euroliga, Liga Endesa y más. Resultados, fixture y tablas en hora argentina.">
+<title>La Naranja · Básquet hoy: partidos, resultados y dónde verlos</title>
+<link rel="canonical" href="https://doble-lyart.vercel.app/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#10243f">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="La Naranja">
+<meta property="og:locale" content="es_AR">
+<meta property="og:title" content="La Naranja · Básquet hoy: partidos, resultados y dónde verlos">
+<meta property="og:description" content="Partidos de básquet de hoy y dónde verlos en Argentina: Liga Nacional, Liga Argentina, NBA, Euroliga, Liga Endesa y más. Resultados, fixture y tablas en hora argentina.">
+<meta property="og:url" content="https://doble-lyart.vercel.app/">
+<meta property="og:image" content="https://doble-lyart.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap">
 <style>
@@ -31,7 +47,8 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 header{background:var(--band);color:var(--band-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px 6px}
 .brand{font-weight:700;font-size:24px;letter-spacing:-.02em;line-height:1;background:none;border:0;color:var(--band-ink);cursor:pointer;padding:4px 0}
-.brand i{font-style:normal;color:var(--accent)}
+.brand{display:inline-flex;align-items:center;gap:.04em;white-space:nowrap}
+.ball{display:inline-block;width:.62em;height:.62em;margin-left:.08em;vertical-align:baseline;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23e8742a'/%3E%3Cpath d='M12 1v22M1 12h22M4.6 4.2c3.4 3.4 3.4 12.2 0 15.6M19.4 4.2c-3.4 3.4-3.4 12.2 0 15.6' stroke='%2310243f' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") center/contain no-repeat}
 .upd{font-size:12.5px;color:var(--band-muted);text-align:right}
 .search{position:relative;flex:1;max-width:340px;display:flex;align-items:center}
 .search svg{position:absolute;left:10px;color:var(--band-muted);pointer-events:none}
@@ -280,7 +297,7 @@ button.tc:hover{border-color:var(--accent)}
 .ph{display:grid;place-items:center}
 .ph .phl{width:auto;height:38%;max-width:60%;object-fit:contain;opacity:.9}
 .ph .phw{font-weight:700;font-size:26px;color:var(--muted)}
-.ph .phw i{font-style:normal;color:var(--accent)}
+.ph .phw .ball{width:.5em;height:.5em}
 .nb{padding:12px 14px 14px;display:grid;gap:6px;align-content:start}
 .nlead h2{margin:0;font-size:25px;line-height:1.15;font-weight:700;text-wrap:balance}
 .nlead p{margin:0;color:var(--muted);font-size:15px;max-width:68ch;text-wrap:pretty}
@@ -340,6 +357,11 @@ button.tc:hover{border-color:var(--accent)}
   .mrow.duel .mtv .ok{display:inline}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}.btn:active,.subs button:active,.chips button:active,.daybar button:active{transform:none}}
+.seo{background:var(--card);padding:6px 16px 16px;border-radius:4px}
+.seo h1{font-size:22px;line-height:1.2;margin:12px 0 6px}.seo h2{font-size:17px;margin:18px 0 6px}.seo h3{font-size:14px;margin:12px 0 4px;color:var(--muted)}
+.seo ul{list-style:none;padding:0;margin:0}.seo li{padding:5px 0;border-bottom:1px solid var(--line)}.seo time{font-family:"Roboto Mono",monospace;font-weight:700;margin-right:6px}
+.seo small{color:var(--faint)}.seo table{border-collapse:collapse;width:100%;font-size:14px}.seo td,.seo th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left}
+.seo nav a{margin-right:4px}
 </style>
 </head>
 <body>
@@ -347,7 +369,7 @@ button.tc:hover{border-color:var(--accent)}
 <header>
   <div class="wrap">
     <div class="top">
-      <button class="brand" data-sec="hoy" aria-label="Doble, ir a hoy">doble<i>.</i></button>
+      <button class="brand" data-sec="hoy" aria-label="La Naranja, ir a hoy">la naranja<i class="ball"></i></button>
       <div class="search" role="search">
         <label class="sr" for="q">Buscar equipo</label>
         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.6" y2="16.6"></line></svg>
@@ -365,11 +387,11 @@ button.tc:hover{border-color:var(--accent)}
   <div id="lhead"></div>
   <nav class="tabs" role="tablist" id="tabs" hidden></nav>
   <main id="main">
-    <section id="content" aria-live="polite"><p class="loading">Cargando partidos…</p></section>
+    <section id="content" aria-live="polite"><div class="seo"><h1>Básquet hoy, martes 27 de octubre: partidos, resultados y dónde verlos</h1><p>Todos los partidos de básquet de hoy en hora argentina, con el canal o plataforma para verlos: Liga Nacional, Liga Argentina, Liga Femenina, Euroliga, Liga Endesa, NBA, Selección y ligas zonales.</p><h2>Partidos de hoy</h2><ul><li><time>13:00</time> Dubai Basketball vs Paris Basketball <small>Euroliga</small> <small>· Sin TV confirmada</small></li><li><time>16:00</time> Bayern Munich vs FC Barcelona <small>Euroliga</small> <small>· Basquetpass</small></li><li><time>16:00</time> Estrella Roja vs Maccabi Tel Aviv <small>Euroliga</small> <small>· Basquetpass</small></li><li><time>16:15</time> Panathinaikos vs Olimpia Milano <small>Euroliga</small> <small>· Basquetpass</small></li><li><time>16:30</time> Valencia Basket vs Fenerbahce <small>Euroliga</small> <small>· Basquetpass</small></li><li><time>17:00</time> Baskonia vs Real Madrid <small>Euroliga</small> <small>· DSports · Basquetpass</small></li><li><time>17:00</time> Peñarol (MDP) vs San Martín (C) <small>Liga de Desarrollo</small> <small>· Basquetpass</small></li><li><time>20:30</time> Boston Celtics vs Brooklyn Nets <small>NBA</small> <small>· Solo NBA League Pass</small></li><li><time>21:00</time> Altense vs Ateneo <small>Bahía Blanca · LBB Plata</small> <small>· Sin TV confirmada</small></li><li><time>21:00</time> Boca vs Regatas (C) <small>Liga de Desarrollo</small> <small>· Basquetpass</small></li><li><time>21:00</time> Hindu (C) vs Bochas (CC) <small>Liga Argentina</small> <small>· Basquetpass</small></li><li><time>21:00</time> New York Knicks vs Detroit Pistons <small>NBA</small> <small>· HBO Max · TNT Sports</small></li><li><time>21:00</time> Peñarol (MDP) vs San Martín (C) <small>Liga Nacional</small> <small>· Basquetpass</small></li><li><time>21:00</time> Pico FC vs Quilmes (MDP) <small>Liga Argentina</small> <small>· Basquetpass</small></li><li><time>21:00</time> Puerto Comercial vs Sportivo Bahiense <small>Bahía Blanca · LBB Plata</small> <small>· Sin TV confirmada</small></li><li><time>21:00</time> San Antonio Spurs vs Sacramento Kings <small>NBA</small> <small>· Solo NBA League Pass</small></li><li><time>21:00</time> San Isidro vs Riachuelo (LR) <small>Liga Argentina</small> <small>· Basquetpass</small></li><li><time>21:30</time> Centenario (VT) vs Unión (MDP) <small>Liga Argentina</small> <small>· Basquetpass</small></li><li><time>21:30</time> Dep. Norte vs Gimnasia (LP) <small>Liga Argentina</small> <small>· Basquetpass</small></li><li><time>21:30</time> Independiente (SDE) vs Santa Paula (G) <small>Liga Argentina</small> <small>· Basquetpass</small></li></ul><h2>Resultados de ayer</h2><ul><li><time>16:30</time> Lanús <b>71–81</b> Regatas (C) <small>Liga de Desarrollo</small></li><li><time>20:00</time> Charlotte Hornets <b>110–103</b> Washington Wizards <small>NBA</small></li><li><time>20:00</time> Cleveland Cavaliers <b>127–125</b> Minnesota Timberwolves <small>NBA</small></li><li><time>20:30</time> Boston Celtics <b>134–99</b> Chicago Bulls <small>NBA</small></li><li><time>20:30</time> Lanús <b>72–63</b> Regatas (C) <small>Liga Nacional</small></li><li><time>20:30</time> Miami Heat <b>109–113</b> Dallas Mavericks <small>NBA</small></li><li><time>21:00</time> Argentino <b>72–81</b> 9 de Julio <small>Bahía Blanca · LBB Plata</small></li><li><time>21:00</time> Milwaukee Bucks <b>110–102</b> Indiana Pacers <small>NBA</small></li><li><time>21:00</time> Oklahoma City Thunder <b>125–114</b> Phoenix Suns <small>NBA</small></li><li><time>21:00</time> Rocamora <b>81–75</b> River <small>Liga Argentina</small></li><li><time>21:00</time> Villa San Martín <b>80–82</b> Mitre (Posadas) <small>Liga Argentina</small></li><li><time>21:30</time> Berazategui <b>69–46</b> Bernal <small>FeBAMBA · Copa Oro</small></li><li><time>21:30</time> Houston Rockets <b>120–110</b> Atlanta Hawks <small>NBA</small></li><li><time>21:30</time> Los Andes <b>70–91</b> Moreno <small>FeBAMBA · Copa Oro</small></li><li><time>21:30</time> Ramos Mejía LTC <b>47–41</b> CASA Padua <small>FeBAMBA · Copa Oro</small></li><li><time>21:30</time> Regatas (SN) <b>108–104</b> Racing (A) <small>Liga Argentina</small></li><li><time>21:30</time> Sitas <b>55–53</b> AFALP <small>FeBAMBA · Copa Oro</small></li><li><time>21:30</time> U.V. Villa Adelina <b>72–75</b> Platense <small>FeBAMBA · Copa Oro</small></li><li><time>21:30</time> Varela Jrs. <b>79–59</b> Juventud Unida (Cañuelas) <small>FeBAMBA · Copa Oro</small></li><li><time>22:00</time> Tristán Suárez <b>75–68</b> Tamberos Unidos <small>FeBAMBA · Copa Oro</small></li><li><time>22:00</time> Utah Jazz <b>105–110</b> Memphis Grizzlies <small>NBA</small></li><li><time>23:00</time> Denver Nuggets <b>114–134</b> Golden State Warriors <small>NBA</small></li></ul><h2>Noticias</h2><ul><li><a href="https://www.laliganacional.com.ar/laligaargentina/noticia/53371/rocamora-bajo-a-river-en-un-gran-partido" rel="noopener">Rocamora le quitó el invicto a River en Concepción del Uruguay</a> <small>Liga Nacional</small></li><li><a href="https://www.laliganacional.com.ar/laligaargentina/noticia/53372/epico-triunfo-de-regatas-en-suplementario" rel="noopener">Regatas San Nicolás le ganó a Racing en suplementario</a> <small>Liga Nacional</small></li><li><a href="https://www.laliganacional.com.ar/laligaargentina/noticia/53373/mitre-se-llevo-la-victoria-sobre-el-final-en-resistencia" rel="noopener">Mitre de Posadas logró su primer triunfo en la Liga Argentina</a> <small>Liga Nacional</small></li><li><a href="https://abbasquet.com/9-de-julio-repitio-y-se-metio-en-semifinales" rel="noopener">LBB Plata: 9 de Julio barrió a Argentino y es semifinalista</a> <small>Asociación Bahiense</small></li><li><a href="https://www.espn.com/nba/recap?gameId=401909876" rel="noopener">Golden State consiguió su primer triunfo de la temporada en Denver</a> <small>ESPN</small></li><li><a href="https://www.nba.com/news/pacers-ben-sheppard-to-undergo-surgery-for-a-torn-meniscus-on-wednesday" rel="noopener">Ben Sheppard será operado del menisco</a> <small>NBA</small></li><li><a href="https://www.nbamaniacs.com/noticias/desgracia-ceba-jalen-williams/" rel="noopener">Jalen Williams salió en camilla con una grave lesión en la pierna</a> <small>NBA Maniacs</small></li><li><a href="https://www.laliganacional.com.ar/laliga/noticia/53370/lanus-volvio-a-la-victoria-en-casa" rel="noopener">Lanús remontó y le ganó a Regatas en el Rotili</a> <small>Liga Nacional</small></li></ul><nav><h2>Competencias</h2><a href="/liga-nacional/">Liga Nacional</a> · <a href="/liga-argentina/">Liga Argentina</a> · <a href="/liga-femenina/">Liga Femenina</a> · <a href="/seleccion-argentina/">Selección</a> · <a href="/liga-sudamericana/">Liga Sudamericana</a> · <a href="/bcl-americas/">BCL Americas</a> · <a href="/euroliga/">Euroliga</a> · <a href="/liga-endesa/">Liga Endesa</a> · <a href="/nba/">NBA</a> · <a href="/liga-de-desarrollo/">Liga de Desarrollo</a> · <a href="/bahia-blanca-lbb-oro/">Bahía Blanca · LBB Oro</a> · <a href="/bahia-blanca-lbb-plata/">Bahía Blanca · LBB Plata</a> · <a href="/febamba/">FeBAMBA · Copa Oro</a> · <a href="/mar-del-plata/">Mar del Plata · AMB</a></nav><p class="loading">Cargando…</p></div></section>
     <aside id="side"></aside>
   </main>
   <div class="foot">
-    <span>Todos los horarios son de Argentina. Resultados y tablas salen de las fuentes oficiales: la AdC (laliganacional.com.ar), la Euroliga, la ACB, FIBA y ESPN para la NBA. Los canales salen de las grillas de Basquetpass y de cada señal. Se actualiza solo todas las noches.</span>
+    <span>Todos los horarios son de Argentina. Resultados y tablas salen de las fuentes oficiales: la AdC (laliganacional.com.ar), la Euroliga, la ACB, FIBA y ESPN para la NBA. Los canales salen de las grillas de Basquetpass y de cada señal. Se actualiza solo varias veces por día. <a href="/fuentes/">Fuentes y contacto</a>.</span>
     <span>Las noticias son resúmenes propios con link a la nota original. Tus equipos y tus canales quedan guardados en este navegador.</span>
   </div>
 </div>
@@ -389,6 +411,17 @@ const SOON = {arg:["Liga Federal (2027)","Pre Federal y regionales"]};
 const NCOMP = [["todas","Todas"],["lnb","Liga Nacional"],["la","Liga Argentina"],["lfb","Liga Femenina"],["federal","Federal"],["zonales","Ligas zonales"],["formativas","Formativas y selecciones"],["seleccion","Selección"],["intl","Copas"],["el","Euroliga"],["acb","Liga Endesa"],["europa","Resto de Europa"],["argentinos","Argentinos afuera"],["nba","NBA"]];
 const NZONA = [["todas","Todas"],["norte","Norte"],["centro","Centro"],["litoral","Litoral"],["cuyo","Cuyo"],["buenosaires","Buenos Aires"],["patagonia","Patagonia"],["sudamerica","Sudamérica"],["espana","España"],["europa","Europa"],["nba","EE.UU."]];
 const NCOMP_ALIAS = {euroliga:"el"};
+const SLUG = {lnb:"liga-nacional",la:"liga-argentina",lfb:"liga-femenina",sel:"seleccion-argentina",lsb:"liga-sudamericana",bcla:"bcl-americas",el:"euroliga",acb:"liga-endesa",nba:"nba",ldd:"liga-de-desarrollo",bbo:"bahia-blanca-lbb-oro",bbp:"bahia-blanca-lbb-plata",feb:"febamba",amb:"mar-del-plata"};
+const BRAND = "La Naranja";
+function syncUrl(){
+  try{
+    const path = S.comp && SLUG[S.comp] && !S.team ? "/"+SLUG[S.comp]+"/" : "/";
+    const hash = !S.comp && S.sec!=="hoy" && !S.team ? "#"+S.sec : "";
+    if(location.pathname+location.hash !== path+hash) history.replaceState(null, "", path+hash);
+    const sn = (SECS.find(s=>s[0]===S.sec)||[])[1];
+    document.title = S.comp ? `${COMP[S.comp].n}: resultados, tabla y dónde ver | ${BRAND}` : (S.sec==="hoy" ? `${BRAND} · Básquet hoy: partidos, resultados y dónde verlos` : `${sn} | ${BRAND}`);
+  }catch(e){}
+}
 const UPPER = new Set(["FSA","FC","MDP","SDE","NQN","SN","LP","BB","CC","VT","LR","SL","MZA","CR","SF","CH","LB"]);
 const LOWER = new Set(["DE","LA","DEL","Y","EL","LAS","LOS"]);
 const DOW = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
@@ -451,7 +484,7 @@ const saveCan = () => { try{ localStorage.setItem("doble-canales", JSON.stringif
 const isFav = (l,id) => FAVS.includes(l+":"+id);
 
 const S = { sec:"hoy", comp:null, tab:"partidos", team:null, date:TODAY, open:null, month:null, hoyF:"todas", hoyV:"comp", puedo:false, verCan:false, nRange:"hoy", nComp:"todas", nZona:"todas" };
-const h0 = (location.hash||"").slice(1);
+const h0 = (location.hash||"").slice(1) || window.RUTA || "";
 if(SECS.some(s=>s[0]===h0)) S.sec = h0;
 else if(COMP[h0]) { S.sec = COMP[h0].sec; S.comp = h0; }
 
@@ -640,7 +673,7 @@ function newsMedia(it, cls){
   const f = fotoOf(it);
   if(f) return `<div class="${cls}"><img src="${f}" alt="" loading="lazy"></div>`;
   const k = newsLogoKey(it);
-  return `<div class="${cls} ph">${k?`<img class="phl" src="${LOGOS.comp[k]}" alt="">`:`<span class="phw">doble<i>.</i></span>`}</div>`;
+  return `<div class="${cls} ph">${k?`<img class="phl" src="${LOGOS.comp[k]}" alt="">`:`<span class="phw">la naranja<i class="ball"></i></span>`}</div>`;
 }
 const newsMeta = it => `<div class="nmeta">${it.n===1?`<span class="ofi">Oficial</span>`:""}<span>${esc(it.f||"")}</span><span>${esc(newsWhen(it))}</span></div>`;
 const newsTagHtml = it => { const t=newsTag(it); return (it.imp>=3||t) ? `<div class="ntag">${it.imp>=3?`<b>Destacada</b>`:""}${t?`<span>${esc(t)}</span>`:""}</div>` : ""; };
@@ -880,9 +913,11 @@ function render(){
   try { document.getElementById("upd").textContent = stamps.length ? "Actualizado " + new Date(stamps.at(-1)).toLocaleString("es-AR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:"America/Buenos_Aires"}) : ""; } catch(e){}
   main.classList.remove("single"); side.hidden = false; subs.hidden = true; tabs.hidden = true; lh.innerHTML = ""; side.innerHTML = "";
   if(!loaded){
-    c.innerHTML = dbOk ? `<p class="loading">Cargando partidos…</p>` : `<div class="empty"><h2>No pudimos cargar los partidos</h2><p>Abrí esta página desde claude.ai con tu sesión iniciada para ver resultados, fixture y tablas.</p></div>`;
+    if(dbOk && c.querySelector(".seo")) return;
+    c.innerHTML = dbOk ? `<p class="loading">Cargando partidos…</p>` : `<div class="empty"><h2>No pudimos cargar los partidos</h2><p>Revisá tu conexión y probá recargar la página.</p></div>`;
     return;
   }
+  syncUrl();
   const finish = () => { if(!side.innerHTML) { side.hidden = true; main.classList.add("single"); } };
   if(S.team){
     const v = viewClub(); if(!v) return render();
@@ -1003,7 +1038,7 @@ document.addEventListener("submit", async e=>{
 render();
 (async ()=>{
   canEdit = false; db = null;
-  const get = (n, opt) => fetch("data/"+n+".json", {cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(n); return r.json(); })
+  const get = (n, opt) => fetch("/data/"+n+".json", {cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(n); return r.json(); })
     .catch(e=>{ if(opt) return null; throw e; });
   try{
     const [ligas, noticias, logos, escudos, fotos, extra, nba, bp] = await Promise.all([
