@@ -46,8 +46,15 @@ def get(url, binario=False, timeout=25, headers=None):
         return b if binario else b.decode(r.headers.get_content_charset() or "utf-8", "replace")
 
 
-def get_json(url):
-    return json.loads(get(url, headers={"Accept": "application/json"}))
+def get_json(url, intentos=3):
+    import time
+    for i in range(intentos):
+        try:
+            return json.loads(get(url, headers={"Accept": "application/json"}))
+        except Exception:
+            if i == intentos - 1:
+                raise
+            time.sleep(3 * (i + 1))
 
 
 def iso_ar(s):
@@ -132,7 +139,7 @@ def nba(estado):
         raise RuntimeError("ESPN no respondió: " + "; ".join(errores[:3]))
     # partidos del rango consultado que ya no figuran (postergados o reprogramados)
     desde, hasta = ymd(HOY - dt.timedelta(days=2)), ymd(HOY + dt.timedelta(days=23))
-    for ik in list(partidos):
+    for ik in list(partidos) if not errores else []:  # si falló algún día, no se borra nada
         d = ik[:6]
         if desde <= d <= hasta and ik not in vistos and len(partidos[ik].split(" ")) < 6:
             del partidos[ik]
