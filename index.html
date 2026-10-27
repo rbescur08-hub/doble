@@ -1003,17 +1003,30 @@ document.addEventListener("submit", async e=>{
 render();
 (async ()=>{
   canEdit = false; db = null;
-  const get = n => fetch("data/"+n+".json", {cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(n); return r.json(); });
+  const get = (n, opt) => fetch("data/"+n+".json", {cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(n); return r.json(); })
+    .catch(e=>{ if(opt) return null; throw e; });
   try{
-    const [ligas, noticias, logos, escudos, fotos, extra] = await Promise.all(
-      ["ligas","noticias","logos","escudos","fotos","extra"].map(get));
+    const [ligas, noticias, logos, escudos, fotos, extra, nba, bp] = await Promise.all([
+      get("ligas"), get("noticias"), get("logos"), get("escudos"), get("fotos", true), get("extra", true), get("nba", true), get("bp", true)]);
+    if(nba) ligas.nba = nba;
+    // Basquetpass: suma el canal a los partidos que transmite
+    for(const l in (bp||{})){
+      const doc = ligas[l]; if(!doc || doc.tvTodos) continue;
+      doc.info = doc.info || {};
+      for(const k of bp[l]){
+        const tv = (doc.info[k] && doc.info[k].tv) || "";
+        if(!tv.includes("Basquetpass")) doc.info[k] = {...(doc.info[k]||{}), tv: tv ? tv+" · Basquetpass" : "Basquetpass"};
+      }
+    }
     const next = {};
     for(const id in ligas){ if(COMP[id]) next[id] = parseLiga(id, ligas[id]); }
     const eq = {};
     for(const l in escudos){ const m = escudos[l] || {}; for(const id in m) eq[l+":"+id] = m[id]; }
-    DATA = next; NEWS = noticias; FOTOS = fotos;
+    const fo = {};
+    for(const k in (fotos||{})){ const v = fotos[k]; fo[k] = Array.isArray(v) ? v[1] : v; }
+    DATA = next; NEWS = noticias; FOTOS = fo;
     LOGOS = {eq, comp:logos.comp||{}, tv:logos.tv||{}, flag:logos.flag||{}};
-    ARG = extra.argentinos || null; FORM = extra.formativas || null;
+    ARG = extra?.argentinos || null; FORM = extra?.formativas || null;
     loaded = true; render();
   }catch(e){ dbOk = false; loaded = false; render(); }
 })();

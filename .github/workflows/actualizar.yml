@@ -1,0 +1,39 @@
+name: Actualizar datos
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"   # cada 30 minutos
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["scripts/**", ".github/workflows/actualizar.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: actualizar
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet pillow
+      - name: NBA, Basquetpass y fotos
+        run: python scripts/actualizar.py
+      - name: Guardar cambios
+        run: |
+          git add data
+          if git diff --cached --quiet; then echo "sin cambios"; exit 0; fi
+          # estado.json cambia siempre por la hora: si es lo único, no se sube (evita deploys de más)
+          if [ "$(git diff --cached --name-only)" = "data/estado.json" ]; then echo "solo estado"; exit 0; fi
+          git config user.name "rbescur08-hub"
+          git config user.email "rbescur08@gmail.com"
+          git commit -q -m "Datos automáticos $(TZ=America/Argentina/Buenos_Aires date '+%d/%m %H:%M')"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin main && break; sleep 5; done
