@@ -1,7 +1,10 @@
 """Actualización automática de Doble (corre en GitHub Actions, sin Claude).
 
+- Resultados del día: Liga Nacional, Liga Argentina, Liga Femenina, Liga de Desarrollo (AdC) y Euroliga
+  (API oficial) -> data/vivo.json; la página los aplica sobre la base (scripts/vivo.py y app.html)
 - NBA: partidos, resultados, TV en Argentina y tablas desde la API pública de ESPN -> data/nba.json
 - Basquetpass: qué partidos de la base transmite -> data/bp.json
+- Escudos de equipos nuevos (AdC, Euroliga, ESPN) -> data/escudos_auto.json
 - Fotos de noticias: imagen de cada nota de data/noticias.json -> data/fotos.json
 - Estado de cada paso -> data/estado.json
 
@@ -313,12 +316,252 @@ def fotos(estado):
     return cambio
 
 
+# ---------------------------------------------------------------- Resultados del día
+ADC = "https://www.laliganacional.com.ar"
+ADC_LIGAS = {"lnb": "laliga", "la": "laligaargentina", "lfb": "lfb", "ldd": "ligaproximo"}
+ESCUDOS_ADC = {}  # liga -> {idClub: url del escudo}, lo usa el paso de escudos
+FINAL_TRAS = dt.timedelta(hours=2)  # la AdC no marca "final": un marcador cuenta 2 h después del inicio
+
+
+def _limpio(s):
+    return html.unescape(re.sub(r"<[^>]+>|\s+", " ", s)).strip()
+
+
+def adc_partidos(liga, slug):
+    desde, hasta = HOY - dt.timedelta(days=3), HOY + dt.timedelta(days=14)
+    h = get(f"{ADC}/{slug}/fixture?handler=ProximosPartidos&fechaInicio={desde}&fechaFin={hasta}")
+    filas = re.findall(r'<tr class="fila-tabla-calendarios.*?</tr>', h, re.S)
+    if not filas and "tabla-calendarios" not in h:
+        raise RuntimeError(f"{slug}: la página del fixture cambió")
+    out = []
+    for r in filas:
+        ids = re.findall(r'/equipo/(\d+)/', r)
+        pts = [_limpio(x) for x in re.findall(r'<td class="resultados">(.*?)</td>', r, re.S)]
+        m = re.search(r'class="fecha-campo[^"]*">\s*<strong>\s*(\d\d)/(\d\d)/(\d{4})\s*(\d\d:\d\d)?', r)
+        for i, src in re.findall(r'src="/escudos/(\d+)/(\d+)"', r):
+            ESCUDOS_ADC.setdefault(liga, {})[i] = f"{ADC}/escudos/{i}/{src}"
+        if len(ids) < 2 or not m:
+            continue
+        hora = (m.group(4) or "").replace(":", "")
+        linea = f"{m.group(3)[2:]}{m.group(2)}{m.group(1)} {hora} {ids[0]} {ids[-1]}"
+        if len(pts) == 2 and pts[0].isdigit() and pts[1].isdigit() and (pts[0], pts[1]) != ("0", "0") and hora:
+            inicio = dt.datetime.strptime(linea[:11], "%y%m%d %H%M").replace(tzinfo=AR)
+            if AHORA - inicio >= FINAL_TRAS:
+                linea += f" {pts[0]} {pts[1]}"
+        out.append(linea)
+    return out
+
+
+def adc_tablas(liga, slug, doc):
+    tablas = []
+    for t in doc.get("tablas") or []:
+        if not t.get("faseId") or not t.get("grupoId"):
+            return None
+        h = get(f"{ADC}/{slug}/tabla-posiciones?handler=Clasificacion&faseId={t['faseId']}&grupoId={t['grupoId']}")
+        filas = []
+        for r in re.findall(r'<tr class="datos-estadisticos">(.*?)</tr>', h, re.S):
+            i = re.search(r'/equipo/(\d+)/', r)
+            n = [_limpio(x) for x in re.findall(r"<td>(.*?)</td>", r, re.S)]
+            for e_id, src in re.findall(r'src="/escudos/(\d+)/(\d+)"', r):
+                ESCUDOS_ADC.setdefault(liga, {})[e_id] = f"{ADC}/escudos/{e_id}/{src}"
+            # columnas: posición, PJ, PG, PP, PF, PC, PTOS, %VICT
+            if i and len(n) >= 7 and all(x.isdigit() for x in n[1:7]):
+                filas.append(f"{i.group(1)} {' '.join(n[1:7])}")
+        if not filas:
+            return None  # una tabla vacía: mejor dejar la de la base
+        tablas.append({"grupo": t.get("grupo"), "filas": ",".join(filas)})
+    return tablas or None
+
+
+def euroliga():
+    j = get_json("https://api-live.euroleague.net/v2/competitions/E/seasons/E2026/games")
+    desde, hasta = HOY - dt.timedelta(days=3), HOY + dt.timedelta(days=14)
+    out, ultima = [], 0
+    for g in j.get("data") or []:
+        try:
+            f = iso_ar(g["utcDate"])
+        except Exception:
+            continue
+        if g.get("played"):
+            ultima = max(ultima, int(g.get("round") or 0))
+        if not (desde <= f.date() <= hasta):
+            continue
+        h, a = g["local"]["club"]["code"], g["road"]["club"]["code"]
+        linea = f"{ymd(f)} {f:%H%M} {h} {a}" if g.get("confirmedHour", True) else f"{ymd(f)}  {h} {a}"
+        if g.get("played"):
+            linea += f" {int(g['local']['score'])} {int(g['road']['score'])}"
+        out.append(linea)
+    tablas = None
+    if ultima:
+        st = get_json(f"https://api-live.euroleague.net/v3/competitions/E/seasons/E2026/rounds/{ultima}/basicstandings")
+        filas = [f"{t['club']['code']} {t['gamesPlayed']} {t['gamesWon']} {t['gamesLost']} {t['pointsFor']} {t['pointsAgainst']} {t['gamesWon']}"
+                 for t in sorted(st.get("teams") or [], key=lambda t: t.get("position") or 99)]
+        if len(filas) >= 18:
+            tablas = filas
+    return out, tablas
+
+
+def vivo(estado):
+    ligas = leer("ligas.json", {})
+    viejo = leer("vivo.json", {}) or {}
+    nuevo, errores, resultados = {}, [], 0
+    for liga, slug in ADC_LIGAS.items():
+        if liga not in ligas:
+            continue
+        try:
+            p = adc_partidos(liga, slug)
+            v = {"p": p}
+            try:
+                t = adc_tablas(liga, slug, ligas[liga])
+                if t:
+                    v["tablas"] = t
+            except Exception as e:
+                errores.append(f"{liga} tabla: {str(e)[:80]}")
+            nuevo[liga] = v
+            resultados += sum(1 for s in p if len(s.split(" ")) >= 6)
+        except Exception as e:
+            errores.append(f"{liga}: {str(e)[:80]}")
+            if liga in viejo:
+                nuevo[liga] = viejo[liga]  # si falla, queda lo último que se leyó bien
+    if "el" in ligas:
+        try:
+            p, filas = euroliga()
+            v = {"p": p}
+            grupos = ligas["el"].get("tablas") or []
+            if filas and len(grupos) == 1:
+                v["tablas"] = [{"grupo": grupos[0].get("grupo"), "filas": ",".join(filas)}]
+            nuevo["el"] = v
+            resultados += sum(1 for s in p if len(s.split(" ")) >= 6)
+        except Exception as e:
+            errores.append(f"el: {str(e)[:80]}")
+            if "el" in viejo:
+                nuevo["el"] = viejo["el"]
+    if not nuevo:
+        raise RuntimeError("no respondió ninguna fuente: " + "; ".join(errores[:3]))
+    for v in nuevo.values():
+        v.setdefault("act", AHORA.isoformat(timespec="seconds"))
+    # "act" cambia siempre: se compara sin él para no subir cambios de más
+    sin_act = lambda d: {k: {x: y for x, y in v.items() if x != "act"} for k, v in d.items()}
+    cambio = sin_act(nuevo) != sin_act(viejo) and guardar("vivo.json", nuevo)
+    estado["vivo"] = {"ok": True, "ligas": sorted(nuevo), "resultados": resultados, "avisos": errores[:5]}
+    return cambio
+
+
+# ---------------------------------------------------------------- Escudos de equipos nuevos
+ESC_LADO = 56
+
+
+def sin_fondo_negro(im):
+    """Fondo negro conectado al borde -> transparente (los escudos de la AdC son JPG con fondo negro)."""
+    from collections import deque
+    im = im.convert("RGBA")
+    w, h = im.size
+    px = im.load()
+    visto = bytearray(w * h)
+    cola = deque()
+    for x in range(w):
+        cola.append((x, 0)); cola.append((x, h - 1))
+    for y in range(h):
+        cola.append((0, y)); cola.append((w - 1, y))
+    while cola:
+        x, y = cola.popleft()
+        if visto[y * w + x]:
+            continue
+        visto[y * w + x] = 1
+        r, g, b, a = px[x, y]
+        m = max(r, g, b)
+        if m > 110:
+            continue
+        px[x, y] = (r, g, b, 0 if m <= 48 else int(a * (m - 48) / 62))
+        for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+            if 0 <= nx < w and 0 <= ny < h and not visto[ny * w + nx]:
+                cola.append((nx, ny))
+    return im
+
+
+def a_escudo(b):
+    from PIL import Image
+    im = Image.open(io.BytesIO(b))
+    transparente = im.mode in ("RGBA", "LA", "P") and im.convert("RGBA").getextrema()[3][0] < 250
+    im = im.convert("RGBA") if transparente else sin_fondo_negro(im)
+    caja = im.getchannel("A").point(lambda a: 255 if a > 8 else 0).getbbox()
+    if caja:
+        im = im.crop(caja)
+    w, h = im.size
+    k = ESC_LADO / max(w, h)
+    im = im.resize((max(1, round(w * k)), max(1, round(h * k))), Image.LANCZOS)
+    out = io.BytesIO()
+    im.save(out, "WEBP", quality=88)
+    return "data:image/webp;base64," + base64.b64encode(out.getvalue()).decode()
+
+
+def escudos(estado):
+    ligas = leer("ligas.json", {})
+    nba_doc = leer("nba.json")
+    if nba_doc:
+        ligas["nba"] = nba_doc
+    base = leer("escudos.json", {}) or {}
+    auto = leer("escudos_auto.json", {}) or {}
+    # lo que ya cargó la base no hace falta repetirlo
+    auto = {l: {i: v for i, v in m.items() if i not in (base.get(l) or {})} for l, m in auto.items()}
+    faltan = {}
+    for l in list(ADC_LIGAS) + ["el", "nba"]:
+        for i in (ligas.get(l) or {}).get("equipos") or {}:
+            if i not in (base.get(l) or {}) and i not in (auto.get(l) or {}):
+                faltan.setdefault(l, []).append(i)
+    cargados, fallas = [], []
+    if faltan:
+        urls = {}
+        for l in ADC_LIGAS:
+            urls[l] = ESCUDOS_ADC.get(l, {})
+            if any(i not in urls[l] for i in faltan.get(l, [])):  # la tabla lista a todos los equipos
+                try:
+                    h = get(f"{ADC}/{ADC_LIGAS[l]}/tabla-posiciones")
+                    for i, src in re.findall(r'src="/escudos/(\d+)/(\d+)"', h):
+                        urls[l].setdefault(i, f"{ADC}/escudos/{i}/{src}")
+                except Exception as e:
+                    fallas.append(f"{l}: {str(e)[:60]}")
+        if "el" in faltan:
+            try:
+                for c in get_json("https://api-live.euroleague.net/v2/competitions/E/seasons/E2026/clubs").get("data") or []:
+                    if (c.get("images") or {}).get("crest"):
+                        urls.setdefault("el", {})[c["code"]] = c["images"]["crest"]
+            except Exception as e:
+                fallas.append(f"el: {str(e)[:60]}")
+        if "nba" in faltan:
+            try:
+                j = get_json("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams")
+                for s in j.get("sports") or []:
+                    for lg in s.get("leagues") or []:
+                        for t in lg.get("teams") or []:
+                            t = t.get("team") or {}
+                            if t.get("logos"):
+                                urls.setdefault("nba", {})[t["abbreviation"]] = t["logos"][0]["href"]
+            except Exception as e:
+                fallas.append(f"nba: {str(e)[:60]}")
+        for l, ids in faltan.items():
+            for i in ids:
+                u = (urls.get(l) or {}).get(i)
+                if not u:
+                    fallas.append(f"{l} {i}: sin escudo en la fuente")
+                    continue
+                try:
+                    auto.setdefault(l, {})[i] = a_escudo(get(u, binario=True))
+                    cargados.append(f"{l} {i}")
+                except Exception as e:
+                    fallas.append(f"{l} {i}: {str(e)[:60]}")
+    auto = {l: m for l, m in auto.items() if m}
+    cambio = guardar("escudos_auto.json", auto)
+    estado["escudos"] = {"ok": True, "nuevos": cargados[:20], "fallas": fallas[:10]}
+    return cambio
+
+
 # ---------------------------------------------------------------- main
 def main():
-    pasos = sys.argv[1:] or ["nba", "basquetpass", "fotos"]
+    pasos = sys.argv[1:] or ["vivo", "nba", "basquetpass", "escudos", "fotos"]
     estado = leer("estado.json", {}) or {}
     for nombre in pasos:
-        fn = {"nba": nba, "basquetpass": basquetpass, "fotos": fotos}[nombre]
+        fn = {"vivo": vivo, "nba": nba, "basquetpass": basquetpass, "escudos": escudos, "fotos": fotos}[nombre]
         try:
             fn(estado)
         except Exception as e:

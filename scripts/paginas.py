@@ -8,6 +8,9 @@ La app reemplaza ese contenido apenas carga; el HTML escrito es para buscadores,
 y para quien abre la página con mala conexión. Se corre en GitHub Actions después de actualizar datos.
 """
 import datetime as dt, html, json, os, re
+import sys
+sys.path.insert(0, os.path.dirname(__file__))
+from vivo import aplicar as aplicar_vivo  # noqa: E402
 
 RAIZ = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 CONF = json.load(open(os.path.join(RAIZ, "scripts", "sitio.json"), encoding="utf-8"))
@@ -170,6 +173,7 @@ def escribir(rel, txt):
 def main():
     app = open(os.path.join(RAIZ, "app.html"), encoding="utf-8").read()
     ligas = leer("ligas.json", {}) or {}
+    aplicar_vivo(ligas, leer("vivo.json", {}) or {})  # resultados del día (GitHub Actions)
     nba = leer("nba.json")
     if nba:
         ligas["nba"] = nba

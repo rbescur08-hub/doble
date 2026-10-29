@@ -1018,14 +1018,46 @@ document.addEventListener("submit", async e=>{
 });
 
 // ---------- datos (versión estática: /data/*.json) ----------
+// Resultados del día (data/vivo.json, GitHub Actions) sobre la base. Misma lógica que scripts/vivo.py.
+function aplicarVivo(ligas, vivo){
+  const dia = s => Date.UTC(2000+ +s.slice(0,2), +s.slice(2,4)-1, +s.slice(4,6));
+  for(const l in (vivo||{})){
+    const doc = ligas[l], v = vivo[l]; if(!doc || !v) continue;
+    const eq = doc.equipos || {}, info = doc.info || {};
+    const arr = String(doc.partidos||"").split(",").filter(s=>s.trim()), partes = arr.map(s=>s.split(" "));
+    for(const linea of (v.p||[])){
+      const p = linea.split(" ");
+      if(p.length<4 || !eq[p[2]] || !eq[p[3]]) continue;
+      let i = partes.findIndex(q=>q[0]===p[0] && q[2]===p[2] && q[3]===p[3]);
+      if(i<0) i = partes.findIndex(q=>q[2]===p[2] && q[3]===p[3] && q.length<6 && Math.abs(dia(q[0])-dia(p[0]))<=20*864e5);
+      if(i<0){ arr.push(linea); partes.push(p); continue; }
+      const q = partes[i];
+      if(q.length>=6 && p.length<6) continue;
+      if(!p[1] && q[1]) p[1] = q[1];
+      const viejo = q[0]+"-"+q[2]+"-"+q[3], nuevo = p[0]+"-"+p[2]+"-"+p[3];
+      if(viejo!==nuevo && info[viejo]){ info[nuevo] = info[viejo]; delete info[viejo]; }
+      arr[i] = p.join(" "); partes[i] = p;
+    }
+    const orden = arr.map((a,i)=>[a,partes[i]]).sort((x,y)=> (x[1][0]+(x[1][1]||"9999")) < (y[1][0]+(y[1][1]||"9999")) ? -1 : 1);
+    doc.partidos = orden.map(x=>x[0]).join(",");
+    if(Object.keys(info).length) doc.info = info;
+    if(v.tablas && v.tablas.length){
+      const base = {}; for(const t of (doc.tablas||[])) base[t.grupo] = t;
+      doc.tablas = v.tablas.map(t=>({...(base[t.grupo]||{}), ...t}));
+    }
+  }
+}
 render();
 (async ()=>{
   canEdit = false; db = null;
   const get = (n, opt) => fetch("/data/"+n+".json", {cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(n); return r.json(); })
     .catch(e=>{ if(opt) return null; throw e; });
   try{
-    const [ligas, noticias, logos, escudos, fotos, extra, nba, bp] = await Promise.all([
-      get("ligas"), get("noticias"), get("logos"), get("escudos"), get("fotos", true), get("extra", true), get("nba", true), get("bp", true)]);
+    const [ligas, noticias, logos, escudos, fotos, extra, nba, bp, vivo, escAuto] = await Promise.all([
+      get("ligas"), get("noticias"), get("logos"), get("escudos"), get("fotos", true), get("extra", true), get("nba", true), get("bp", true),
+      get("vivo", true), get("escudos_auto", true)]);
+    aplicarVivo(ligas, vivo);
+    for(const l in (escAuto||{})){ escudos[l] = {...(escAuto[l]||{}), ...(escudos[l]||{})}; }
     if(nba) ligas.nba = nba;
     // Basquetpass: suma el canal a los partidos que transmite
     for(const l in (bp||{})){

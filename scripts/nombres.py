@@ -1,10 +1,12 @@
 import re, unicodedata
 STOP = {"club","atletico","atlético","de","del","la","el","los","las","y","social","deportivo","sportivo","cultural","basquet","basket","basketball","bc","cd","ca","c","a","sc","fc","football"}
 ALIAS = {"crvena":"estrella roja","zvezda":"","mdp":"mar del plata","caba":"","cr":"comodoro rivadavia","munich":"munich","paris":"paris"}
+# abreviaturas que usa la AdC en los nombres oficiales ("SOC. ESPAÑOLA (SL)", "DEP. BERAZATEGUI")
+ABREV = {"soc":"sociedad","dep":"deportivo","gim":"gimnasia","ind":"independiente","inst":"instituto"}
 def norm(s):
     s = unicodedata.normalize("NFD", str(s or "")).encode("ascii","ignore").decode().lower()
     s = re.sub(r"[^a-z0-9 ]+", " ", s)
-    return [w for w in s.split() if w not in STOP]
+    return [w for w in (ABREV.get(w, w) for w in s.split()) if w not in STOP]
 def score(a, b):
     A, B = set(norm(a)), set(norm(b))
     if not A or not B: return 0
