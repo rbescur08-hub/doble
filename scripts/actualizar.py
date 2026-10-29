@@ -343,6 +343,8 @@ def adc_partidos(liga, slug):
         if len(ids) < 2 or not m:
             continue
         hora = (m.group(4) or "").replace(":", "")
+        if hora == "0000":  # la AdC muestra 00:00 cuando todavía no hay horario
+            hora = ""
         linea = f"{m.group(3)[2:]}{m.group(2)}{m.group(1)} {hora} {ids[0]} {ids[-1]}"
         if len(pts) == 2 and pts[0].isdigit() and pts[1].isdigit() and (pts[0], pts[1]) != ("0", "0") and hora:
             inicio = dt.datetime.strptime(linea[:11], "%y%m%d %H%M").replace(tzinfo=AR)
