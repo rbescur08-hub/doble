@@ -41,6 +41,7 @@ def guardar(nombre, obj):
 def get(url, binario=False, timeout=25, headers=None):
     h = {"User-Agent": UA, "Accept-Language": "es-AR,es;q=0.9,en;q=0.8"}
     h.update(headers or {})
+    url = urllib.parse.quote(url, safe=":/?#[]@!$&'()*+,;=%~")  # URLs con ñ o tildes
     with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=timeout) as r:
         b = r.read()
         return b if binario else b.decode(r.headers.get_content_charset() or "utf-8", "replace")
