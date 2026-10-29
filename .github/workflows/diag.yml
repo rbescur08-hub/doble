@@ -1,0 +1,23 @@
+name: diag
+on:
+  push:
+    branches: [diag]
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          mkdir out; cd out
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36"
+          B=https://www.laliganacional.com.ar
+          curl -sSL -A "$UA" "$B/laliga/fixture?handler=ProximosPartidos&fechaInicio=2026-10-27&fechaFin=2026-10-31" -o lnb_fix.html
+          curl -sSL -A "$UA" "$B/lfb/fixture?handler=ProximosPartidos&fechaInicio=2026-10-27&fechaFin=2026-11-02" -o lfb_fix.html
+          curl -sSL -A "$UA" "$B/laliga/tabla-posiciones?handler=Clasificacion&faseId=21871&grupoId=41209" -o lnb_tab.html
+          curl -sSL -A "$UA" "$B/laliga/fixture" -o lnb_fixpage.html
+          curl -sSL -A "$UA" -H "Accept: application/json" "https://api-live.euroleague.net/v2/competitions/E/seasons/E2026/games?roundNumber=7" -o el_r7.json
+          curl -sSL -A "$UA" -H "Accept: application/json" "https://api-live.euroleague.net/v2/competitions/E/seasons/E2026/games" -o el_all.json
+          curl -sSL -A "$UA" -H "Accept: application/json" "https://api-live.euroleague.net/v3/competitions/E/seasons/E2026/rounds/6/basicstandings" -o el_st.json
+          curl -sSL -A "$UA" -H "Accept: application/json" "https://api-live.euroleague.net/v2/competitions/E/seasons/E2026/clubs" -o el_clubs.json
+          ls -la
+      - uses: actions/upload-artifact@v4
+        with: {name: out, path: out}
