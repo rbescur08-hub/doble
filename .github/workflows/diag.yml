@@ -5,9 +5,11 @@ on:
 jobs:
   d:
     runs-on: ubuntu-latest
+    permissions: {contents: write}
     steps:
+      - uses: actions/checkout@v4
       - run: |
-          mkdir out; cd out
+          mkdir -p out; cd out
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36"
           B=https://www.laliganacional.com.ar
           curl -sSL -A "$UA" "$B/laliga/fixture?handler=ProximosPartidos&fechaInicio=2026-10-27&fechaFin=2026-10-31" -o lnb_fix.html
@@ -19,5 +21,6 @@ jobs:
           curl -sSL -A "$UA" -H "Accept: application/json" "https://api-live.euroleague.net/v3/competitions/E/seasons/E2026/rounds/6/basicstandings" -o el_st.json
           curl -sSL -A "$UA" -H "Accept: application/json" "https://api-live.euroleague.net/v2/competitions/E/seasons/E2026/clubs" -o el_clubs.json
           ls -la
-      - uses: actions/upload-artifact@v4
-        with: {name: out, path: out}
+      - run: |
+          git config user.name rbescur08-hub; git config user.email rbescur08@gmail.com
+          git add out && git commit -qm muestras && git push -q origin HEAD:diag
