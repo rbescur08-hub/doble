@@ -235,6 +235,34 @@ def main():
         escribir(f"{slug}/index.html", pagina(app, f"{corto} {temp}: resultados, tabla y dónde ver | {MARCA}", desc, f"/{slug}/", cuerpo, k, jsonld(l, corto, prox)))
         urls.append(f"/{slug}/")
 
+    # ---- Pre Federal (un torneo por provincia, data/prefederal.json)
+    pf = leer("prefederal.json", {}) or {}
+    tor = sorted((pf.get("torneos") or {}).items(), key=lambda kv: kv[1].get("provincia", ""))
+    if tor:
+        partes = []
+        for k, doc in tor:
+            l = Liga(k, doc, set())
+            prox = [m for m in l.partidos if not m["r"] and HOY <= m["d"] <= HOY + dt.timedelta(days=14)]
+            res = [m for m in l.partidos if m["r"] and m["d"] >= HOY - dt.timedelta(days=14)][::-1]
+            def lista(ms, titulo):
+                if not ms:
+                    return ""
+                return f"<h3>{titulo}</h3><ul>" + "".join(fila(l, m).replace("<li><time>", f"<li>{m['d'].day}/{m['d'].month} <time>", 1) for m in ms) + "</ul>"
+            partes.append(f'<h2>Pre Federal de {e(doc.get("provincia", ""))}</h2>'
+                          + (f'<p><b>{e(doc.get("etapa", ""))}.</b> {e(doc.get("plazas", ""))}</p>' if doc.get("etapa") else "")
+                          + (f'<p>{e(doc.get("formato", ""))} {e(doc.get("playoffs", ""))}</p>' if doc.get("formato") or doc.get("playoffs") else "")
+                          + lista(prox, "Próximos partidos") + lista(res, "Últimos resultados")
+                          + "".join(tabla(l, t) for t in doc.get("tablas") or []))
+        pend = ", ".join(e(p.get("provincia", "")) for p in pf.get("pendientes") or [])
+        cuerpo = ("<h1>Pre Federal de básquet 2026: resultados, fixture y clasificados a la Liga Federal 2027</h1>"
+                  "<p>El Pre Federal es el torneo de cada federación provincial que define quiénes suben a la Liga Federal. Acá están los partidos, resultados y etapas provincia por provincia, en hora argentina.</p>"
+                  + "".join(partes) + (f"<p>Provincias en carga: {pend}.</p>" if pend else "")
+                  + '<p><a href="/">Ver todos los partidos de hoy</a></p>')
+        escribir("pre-federal/index.html", pagina(app, f"Pre Federal de básquet 2026: resultados y fixture por provincia | {MARCA}",
+                                                  "Pre Federal de básquet 2026 provincia por provincia: partidos, resultados, etapas y clasificados a la Liga Federal 2027. En hora argentina.",
+                                                  "/pre-federal/", cuerpo, "pre"))
+        urls.append("/pre-federal/")
+
     # ---- fuentes
     fuentes = """<h1>Fuentes y contacto</h1>
 <p>{m} junta en un solo lugar los partidos de básquet que se juegan en Argentina y los que se pueden ver desde acá. Todos los horarios están en hora argentina.</p>
@@ -244,6 +272,7 @@ def main():
 <li><b>Euroliga:</b> Euroleague Basketball. <b>Liga Endesa:</b> ACB (acb.com).</li>
 <li><b>NBA:</b> calendario y resultados de ESPN; los canales en Argentina salen de las transmisiones nacionales de cada partido.</li>
 <li><b>Bahía Blanca:</b> Asociación Bahiense de Básquetbol. <b>FeBAMBA:</b> febamba.com. <b>Mar del Plata:</b> medios locales.</li>
+<li><b>Pre Federal:</b> medios de cada provincia; cada torneo indica su fuente. Solo se cargan partidos y resultados confirmados.</li>
 <li><b>Dónde ver:</b> grilla de Basquetpass y programación de cada señal. Si un partido no tiene un canal confirmado por una fuente, figura como «Sin TV confirmada».</li>
 </ul>
 <h2>Noticias</h2><p>Las noticias son resúmenes propios con link a la nota original. Las marcadas como «Oficial» vienen de una liga, federación o club. Un dato duro (resultado, lesión, fichaje) se publica solo si lo confirma una fuente oficial o dos medios distintos.</p>

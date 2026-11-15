@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["scripts/**", "app.html", ".github/workflows/actualizar.yml", "data/ligas.json"]  # data/ligas.json: después de cada "Publicar Doble en la web", reaplica los resultados del día
+    paths: ["scripts/**", "app.html", ".github/workflows/actualizar.yml", "data/ligas.json", "data/prefederal_fuente.json"]  # data/ligas.json: después de cada "Publicar Doble en la web", reaplica los resultados del día
 
 permissions:
   contents: write
@@ -27,6 +27,8 @@ jobs:
       - run: pip install --quiet pillow
       - name: Resultados del día, NBA, Basquetpass, escudos y fotos
         run: python scripts/actualizar.py
+      - name: Pre Federal (valida la fuente y arma data/prefederal.json)
+        run: python scripts/prefederal.py
       - name: Páginas para buscadores
         run: python scripts/paginas.py
       - name: Guardar cambios
