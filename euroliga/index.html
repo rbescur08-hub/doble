@@ -409,7 +409,7 @@ button.tc:hover{border-color:var(--accent)}
     <aside id="side"></aside>
   </main>
   <div class="foot">
-    <span>Todos los horarios son de Argentina. Resultados y tablas salen de las fuentes oficiales: la AdC (laliganacional.com.ar), la Euroliga, la ACB, FIBA y ESPN para la NBA. Los canales salen de las grillas de Basquetpass y de cada señal. Se actualiza solo varias veces por día. <a href="/fuentes/">Fuentes y contacto</a>.</span>
+    <span>Todos los horarios son de Argentina. Resultados y tablas salen de las fuentes oficiales: la AdC (laliganacional.com.ar), la Euroliga, la ACB, FIBA y ESPN para la NBA. El Pre Federal sale de la prensa de cada provincia. Los canales salen de las grillas de Basquetpass y de cada señal. Se actualiza solo varias veces por día. <a href="/fuentes/">Fuentes y contacto</a>.</span>
     <span>Las noticias son resúmenes propios con link a la nota original. Tus favoritos y tus canales quedan guardados en este navegador.</span>
   </div>
 </div>
@@ -425,8 +425,9 @@ const COMP = {
   feb:{n:"FeBAMBA · Copa Oro", sec:"zon"}, amb:{n:"Mar del Plata · AMB", sec:"zon"}
 };
 const ORDER = ["lnb","la","lfb","sel","lsb","bcla","el","acb","nba","ldd","bbo","bbp","feb","amb"];
-const SECS = [["hoy","Hoy"],["arg","Argentina"],["int","Internacional"],["mun","Mundo"],["zon","Zonales y formativas"],["argentinos","Argentinos en el mundo"],["noticias","Noticias"],["mis","★ Favoritos"]];
-const SOON = {arg:["Liga Federal (2027)","Pre Federal y regionales"]};
+const SECS = [["hoy","Hoy"],["arg","Argentina"],["pre","Pre Federal"],["int","Internacional"],["mun","Mundo"],["zon","Zonales y formativas"],["argentinos","Argentinos en el mundo"],["noticias","Noticias"],["mis","★ Favoritos"]];
+const SOON = {arg:["Liga Federal (2027)"]};
+let PRE = null; // Pre Federal por provincia (data/prefederal.json): cada torneo se suma a COMP y ORDER al cargar
 const NCOMP = [["todas","Todas"],["lnb","Liga Nacional"],["la","Liga Argentina"],["lfb","Liga Femenina"],["federal","Federal"],["zonales","Ligas zonales"],["formativas","Formativas y selecciones"],["seleccion","Selección"],["intl","Copas"],["el","Euroliga"],["acb","Liga Endesa"],["europa","Resto de Europa"],["argentinos","Argentinos afuera"],["nba","NBA"]];
 const NZONA = [["todas","Todas"],["norte","Norte"],["centro","Centro"],["litoral","Litoral"],["cuyo","Cuyo"],["buenosaires","Buenos Aires"],["patagonia","Patagonia"],["sudamerica","Sudamérica"],["espana","España"],["europa","Europa"],["nba","EE.UU."]];
 const NCOMP_ALIAS = {euroliga:"el"};
@@ -434,8 +435,9 @@ const SLUG = {lnb:"liga-nacional",la:"liga-argentina",lfb:"liga-femenina",sel:"s
 const BRAND = "La Naranja";
 function syncUrl(){
   try{
-    const path = S.comp && SLUG[S.comp] && !S.team && !S.player ? "/"+SLUG[S.comp]+"/" : "/";
-    const hash = !S.comp && S.sec!=="hoy" && !S.team && !S.player ? "#"+S.sec : "";
+    const ficha = S.team || S.player, pre = S.sec==="pre" && !ficha;
+    const path = pre ? "/pre-federal/" : S.comp && SLUG[S.comp] && !ficha ? "/"+SLUG[S.comp]+"/" : "/";
+    const hash = pre ? (S.comp && COMP[S.comp] ? "#"+S.comp : "") : !S.comp && S.sec!=="hoy" && !ficha ? "#"+S.sec : "";
     if(location.pathname+location.hash !== path+hash) history.replaceState(null, "", path+hash);
     const sn = (SECS.find(s=>s[0]===S.sec)||[])[1];
     document.title = S.comp ? `${COMP[S.comp].n}: resultados, tabla y dónde ver | ${BRAND}` : (S.sec==="hoy" ? `${BRAND} · Básquet hoy: partidos, resultados y dónde verlos` : `${sn} | ${BRAND}`);
@@ -543,6 +545,7 @@ function favItem(k){
 const S = { sec:"hoy", comp:null, tab:"partidos", team:null, player:null, date:TODAY, open:null, month:null, hoyF:"todas", hoyV:"comp", puedo:false, verCan:false, nRange:"hoy", nComp:"todas", nZona:"todas" };
 const h0 = (location.hash||"").slice(1) || window.RUTA || "";
 if(SECS.some(s=>s[0]===h0)) S.sec = h0;
+else if(/^pf-[a-z0-9]+$/.test(h0)) { S.sec = "pre"; S.comp = h0; }
 else if(COMP[h0]) { S.sec = COMP[h0].sec; S.comp = h0; }
 
 function parseLiga(key, doc){
@@ -782,6 +785,7 @@ function whyOf(m){
   const fi = favInfo(m); if(fi) return fi.why;
   if(m.liga==="sel") return m.info.fase || "Eliminatorias";
   const f = (m.info.fase||"").toLowerCase();
+  if(COMP[m.liga].sec==="pre") return /final/.test(f) && !/semi|cuartos|octavos/.test(f) ? "Final provincial" : "";
   if(/final|playoff|cuartos|semi/.test(f)) return m.info.fase;
   const a = argOf(m); if(a.length) return "Juega "+a.slice(0,2).join(" y ");
   const ph=tablePos(m.liga,m.h), pa=tablePos(m.liga,m.a);
@@ -793,7 +797,7 @@ function nowAR(){
   catch(e){ return ""; }
 }
 function viewHoy(){
-  const secKeys = {todas:loadedComps()}; ["arg","int","mun","zon"].forEach(x=>secKeys[x]=loadedComps().filter(k=>COMP[k].sec===x));
+  const secKeys = {todas:loadedComps()}; ["arg","pre","int","mun","zon"].forEach(x=>secKeys[x]=loadedComps().filter(k=>COMP[k].sec===x));
   const keys = secKeys[S.hoyF] || secKeys.todas;
   const pool = allMatches(keys);
   let day = pool.filter(m=>m.d===S.date);
@@ -805,7 +809,7 @@ function viewHoy(){
   html += `<div class="daybar"><span>${esc(rel + (rel ? lf.charAt(0).toLowerCase()+lf.slice(1) : lf))}${day.length?` · <b>${day.length} ${day.length===1?"partido":"partidos"}</b> · ${conTV} con TV`:""}</span>
     <span class="ctl"><button data-hoyv="${S.hoyV==="hora"?"comp":"hora"}">${S.hoyV==="hora"?"Por competencia":"Por horario"}</button><button data-vercan="1" aria-pressed="${S.verCan}" aria-expanded="${S.verCan}">Mis canales${CAN.length?` (${CAN.length})`:""}</button><button data-puedo="1" aria-pressed="${S.puedo}" ${CAN.length?"":"disabled"}>Solo lo que puedo ver</button></span></div>`;
   if(S.verCan) html += `<div class="chips" role="group" aria-label="Canales que tengo"><span class="lbl">Tengo</span>${CANALES.map(([k,n])=>`<button data-canal="${esc(k)}" aria-pressed="${CAN.includes(k)}">${esc(n)}</button>`).join("")}</div>`;
-  html += chipRow("", [["todas","Todo"],["arg","Argentina"],["int","Internacional"],["mun","Mundo"],["zon","Zonales"]], S.hoyF, "hoyf");
+  html += chipRow("", [["todas","Todo"],["arg","Argentina"],["pre","Pre Federal"],["int","Internacional"],["mun","Mundo"],["zon","Zonales"]], S.hoyF, "hoyf");
   if(!day.length){ html += S.puedo ? `<div class="empty"><h2>Con tus canales no hay partidos este día</h2><p>Elegí otro día o sacá el filtro «Solo lo que puedo ver».</p></div>` : emptyDay(pool); return html; }
   const mios = day.filter(m=>favLv(m)>1).sort(byTime);
   if(mios.length) html += block(`★ Tus favoritos · ${mios.length} ${mios.length===1?"partido":"partidos"}`, mios, "", {comp:true, why:whyOf}, "mine");
@@ -1040,14 +1044,17 @@ function render(){
   if(S.sec==="mis"){ lh.innerHTML = `<div class="lhead"><h1>Favoritos</h1><span class="meta">Ligas, equipos, zonas y jugadores que seguís. Quedan guardados en este navegador</span></div>`; c.innerHTML = viewMis(); return finish(); }
   // sección con competencias
   const comps = ORDER.filter(k=>COMP[k].sec===S.sec && DATA[k]);
-  if(!S.comp || !comps.includes(S.comp)) S.comp = comps[0];
+  const esPre = S.sec==="pre";
+  if(esPre && !comps.includes(S.comp)) S.comp = null;
+  else if(!S.comp || !comps.includes(S.comp)) S.comp = comps[0];
   subs.hidden = false;
-  subs.innerHTML = comps.map(k=>`<button data-comp="${k}" aria-pressed="${S.comp===k&&!S.agenda}">${compLogo(k)}${esc(COMP[k].n)}</button>`).join("") + (S.sec==="zon"?`<button data-agenda="1" aria-pressed="${!!S.agenda}">Formativas y selecciones</button>`:"") + (SOON[S.sec]||[]).map(n=>`<button class="soon" disabled title="Próximamente">${esc(n)} · pronto</button>`).join("");
+  subs.innerHTML = (esPre?`<button data-sec="pre" aria-pressed="${!S.comp}">Todas las provincias</button>`:"") + comps.map(k=>`<button data-comp="${k}" aria-pressed="${S.comp===k&&!S.agenda}">${compLogo(k)}${esc(COMP[k].prov||COMP[k].n)}</button>`).join("") + (S.sec==="zon"?`<button data-agenda="1" aria-pressed="${!!S.agenda}">Formativas y selecciones</button>`:"") + (SOON[S.sec]||[]).map(n=>`<button class="soon" disabled title="Próximamente">${esc(n)} · pronto</button>`).join("");
   if(S.sec==="zon" && S.agenda){ lh.innerHTML = `<div class="lhead"><h1>Formativas y selecciones</h1><span class="meta">Campeonatos argentinos, Liga Federal Formativa y selecciones provinciales</span></div>`; c.innerHTML = viewFormativas(); side.innerHTML = newsSideCat("formativas"); return finish(); }
+  if(esPre && !S.comp){ lh.innerHTML = `<div class="lhead"><h1>Pre Federal 2026</h1><span class="meta">El torneo de cada provincia que da las plazas para la Liga Federal 2027</span></div>`; c.innerHTML = viewPre(comps); side.innerHTML = newsSideCat("federal"); return finish(); }
   const l = S.comp, D = DATA[l];
   if(!D){ c.innerHTML = `<div class="empty"><h2>Sin datos</h2><p>Esta sección todavía no tiene datos cargados.</p></div>`; return finish(); }
   const played = D.matches.filter(m=>score(m)).length;
-  lh.innerHTML = `<div class="lhead"><h1>${compLogo(l).replace('class="cl"','class="cl big"')}${esc(D.meta.nombre)} ${esc(D.meta.temporada||"")}</h1><span class="meta">${Object.keys(D.teams).length} equipos${D.matches.length?`, ${played} de ${D.matches.length} partidos jugados`:""}</span><button class="favbtn sm" data-fav="liga:${l}" aria-pressed="${favLiga(l)}">${favLiga(l)?"En favoritos":"Seguir liga"}</button><span class="tvl"><span>Dónde verla:</span> ${D.meta.tv?tvHtml(D.meta.tv):"a confirmar"}</span></div>`;
+  lh.innerHTML = `<div class="lhead"><h1>${compLogo(l).replace('class="cl"','class="cl big"')}${esc(D.meta.nombre)} ${esc(D.meta.temporada||"")}</h1><span class="meta">${Object.keys(D.teams).length} equipos${D.matches.length?`, ${played} de ${D.matches.length} partidos jugados`:""}</span><button class="favbtn sm" data-fav="liga:${l}" aria-pressed="${favLiga(l)}">${favLiga(l)?"En favoritos":"Seguir liga"}</button><span class="tvl"><span>Dónde verla:</span> ${D.meta.tv?tvHtml(D.meta.tv):"a confirmar"}</span>${D.meta.etapa?`<span class="meta" style="flex-basis:100%"><b>${esc(D.meta.etapa)}</b>${D.meta.organiza?` · Organiza: ${esc(D.meta.organiza)}`:""}${D.meta.plazas?` · ${esc(D.meta.plazas)}`:""}</span>`:""}</div>`;
   const T = [["partidos","Partidos"],["fixture","Fixture"],["posiciones","Posiciones"],["equipos","Equipos"],["formato",l==="lnb"||l==="el"?"Playoffs":"Formato"]];
   tabs.hidden = false;
   tabs.innerHTML = T.map(([k,n])=>`<button role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${n}</button>`).join("");
@@ -1058,6 +1065,19 @@ function render(){
   else { c.innerHTML = viewFormato(l); side.innerHTML = viewTablas(l,true); }
   if(!D.tablas.length && S.tab!=="posiciones") side.innerHTML = "";
   finish();
+}
+function viewPre(comps){
+  let html = `<p class="note">El Pre Federal no es una liga única: cada federación provincial juega el suyo, con su formato y su calendario, y de ahí salen los equipos que suben a la Liga Federal. Los datos salen de la prensa de cada provincia; cargamos solo lo que está confirmado.</p>`;
+  const hoy = comps.flatMap(l=>DATA[l].matches.filter(m=>m.d===TODAY)).sort(byTime);
+  if(hoy.length) html += block("Hoy en el Pre Federal", hoy, "", {comp:true, why:whyOf});
+  html += `<div class="daytitle">Provincias con datos</div><div class="grid">${comps.map(l=>{
+    const D = DATA[l], nx = D.matches.find(m=>!score(m) && m.d>=TODAY), lp = D.matches.filter(m=>score(m)).at(-1);
+    const lt = lp ? (()=>{ const sc=score(lp); return `${tname(l,lp.h)} ${sc.hs}–${sc.as} ${tname(l,lp.a)}`; })() : "";
+    return `<button class="tc" data-comp="${l}"><b>${favLiga(l)?"★ ":""}${esc(COMP[l].prov)}</b><span>${esc(D.meta.etapa||"")}${D.meta.etapa?" · ":""}${Object.keys(D.teams).length} equipos</span>${lt?`<span>Último: ${esc(lt)}</span>`:""}${nx?`<em>Próximo: ${esc(fmtShort(nx.d))}${nx.t?" "+esc(nx.t):""} · ${esc(tname(l,nx.h))} vs ${esc(tname(l,nx.a))}</em>`:""}</button>`;
+  }).join("")}</div>`;
+  const pend = PRE?.pendientes||[];
+  if(pend.length) html += `<div class="daytitle">En carga</div><p class="note">Estas provincias se van sumando a medida que conseguimos una fuente confiable de fixture y resultados.</p><div class="grid">${pend.map(p=>`<div class="tc"><b>${esc(p.provincia)}</b><span>${esc(p.nota||"Todavía sin datos cargados.")}</span></div>`).join("")}</div>`;
+  return html;
 }
 function viewFormativas(){
   let html = `<p class="note">Los campeonatos de selecciones provinciales y las ligas formativas no tienen un fixture único: acá van las fechas confirmadas y los cierres de temporada. Las novedades del día están en Noticias, filtrando por "Formativas y selecciones".</p>`;
@@ -1087,14 +1107,16 @@ function hitOf(n, nq, extra){
   if(n.includes(" "+nq)) return 2;
   if(n.includes(nq)) return 1;
   const all = n+" "+(extra||""), ts = nq.split(" ");
-  return ts.length>1 && ts.every(t=>all.includes(t)) && ts.some(t=>n.includes(t)) ? 1 : 0;
+  const wa = " "+all, wn = " "+n;
+  return ts.length>1 && ts.every(t=>wa.includes(" "+t)) && ts.some(t=>wn.includes(" "+t)) ? 1 : 0;
 }
 function searchAll(q){
   const nq = normq(q); if(nq.length<2) return [];
   const out = [];
   for(const l of loadedComps()){
     const D = DATA[l], cn = normq(COMP[l].n);
-    const hl = Math.max(hitOf(cn,nq), hitOf(normq(D.meta.nombre),nq), ...(LALIAS[l]||"").split(" ").map(w=>w===nq?4:w.startsWith(nq)&&nq.length>2?2:0), hitOf(LALIAS[l]||"",nq)?1:0);
+    const al = LALIAS[l] || (COMP[l].sec==="pre" ? "prefederal" : "");
+    const hl = Math.max(hitOf(cn,nq), hitOf(normq(D.meta.nombre),nq), ...al.split(" ").map(w=>w===nq?4:w.startsWith(nq)&&nq.length>2?2:0), hitOf(al,nq)?1:0);
     if(hl) out.push({t:"liga", k:"liga:"+l, l, hit:hl, n:COMP[l].n, sub:"Competencia"});
     if(D.tablas.length>1) D.tablas.forEach((t,gi)=>{ const h = hitOf(normq(t.grupo), nq, cn); if(h) out.push({t:"zona", k:zonaKey(l,gi), l, gi, hit:h, n:t.grupo, sub:COMP[l].n}); });
     for(const id of Object.keys(D.teams)){
@@ -1217,12 +1239,20 @@ render();
   const get = (n, opt) => fetch("/data/"+n+".json", {cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(n); return r.json(); })
     .catch(e=>{ if(opt) return null; throw e; });
   try{
-    const [ligas, noticias, logos, escudos, fotos, extra, nba, bp, vivo, escAuto, jug] = await Promise.all([
+    const [ligas, noticias, logos, escudos, fotos, extra, nba, bp, vivo, escAuto, jug, pf] = await Promise.all([
       get("ligas"), get("noticias"), get("logos"), get("escudos"), get("fotos", true), get("extra", true), get("nba", true), get("bp", true),
-      get("vivo", true), get("escudos_auto", true), get("jugadores", true)]);
+      get("vivo", true), get("escudos_auto", true), get("jugadores", true), get("prefederal", true)]);
     aplicarVivo(ligas, vivo);
     for(const l in (escAuto||{})){ escudos[l] = {...(escAuto[l]||{}), ...(escudos[l]||{})}; }
     if(nba) ligas.nba = nba;
+    // Pre Federal: un torneo por provincia, se suma al catálogo
+    PRE = pf || null;
+    for(const [id, doc] of Object.entries(pf?.torneos||{}).sort((a,b)=>String(a[1].provincia).localeCompare(String(b[1].provincia)))){
+      if(!/^pf-/.test(id) || ligas[id]) continue;
+      COMP[id] = {n:"Pre Federal · "+doc.provincia, sec:"pre", prov:doc.provincia};
+      if(!ORDER.includes(id)) ORDER.push(id);
+      ligas[id] = doc;
+    }
     // Basquetpass: suma el canal a los partidos que transmite
     for(const l in (bp||{})){
       const doc = ligas[l]; if(!doc || doc.tvTodos) continue;
