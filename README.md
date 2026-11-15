@@ -7,4 +7,5 @@ Básquet argentino y del mundo: resultados, fixtures, tablas y dónde ver cada p
 - `data/`: los datos.
   - `ligas.json`, `noticias.json`, `escudos.json`, `logos.json`, `extra.json`: los sube la tarea diaria de Claude (`scripts/exportar_db.py`).
   - `nba.json`, `bp.json`, `fotos.json`, `estado.json`: los actualiza GitHub Actions cada 30 minutos (`scripts/actualizar.py`).
+  - `jugadores.json`: planteles para el buscador de jugadores (hoy NBA, desde ESPN). Lo arma GitHub Actions una vez por día.
 - `.github/workflows/actualizar.yml`: la tarea automática. Si algo falla, mirá `data/estado.json` o la pestaña Actions.

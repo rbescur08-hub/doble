@@ -6,6 +6,7 @@
 - Basquetpass: qué partidos de la base transmite -> data/bp.json
 - Escudos de equipos nuevos (AdC, Euroliga, ESPN) -> data/escudos_auto.json
 - Fotos de noticias: imagen de cada nota de data/noticias.json -> data/fotos.json
+- Planteles (para el buscador de jugadores): NBA desde ESPN, una vez por día -> data/jugadores.json
 - Estado de cada paso -> data/estado.json
 
 Cada paso es independiente: si uno falla, los demás siguen y el error queda en estado.json.
@@ -558,12 +559,48 @@ def escudos(estado):
     return cambio
 
 
+# ---------------------------------------------------------------- planteles
+def planteles(estado):
+    """Planteles para el buscador de jugadores -> data/jugadores.json
+    Formato: {"dia": "AAAA-MM-DD", "<liga>": {"<idEquipo>": [[nombre, número, posición], ...]}}
+    Hoy solo la NBA (API pública de ESPN). Corre una vez por día; si un equipo falla, conserva el plantel anterior."""
+    viejo = leer("jugadores.json", {}) or {}
+    if viejo.get("dia") == HOY.isoformat() and viejo.get("nba"):
+        estado["planteles"] = {"ok": True, "saltado": "ya se actualizó hoy", "jugadores": sum(len(v) for v in viejo["nba"].values())}
+        return
+    doc = leer("nba.json") or (leer("ligas.json", {}) or {}).get("nba") or {}
+    ids = [i for i in (doc.get("equipos") or {}) if i != "TBD"]
+    nba_p, fallas = dict(viejo.get("nba") or {}), []
+    for i in ids:
+        try:
+            r = get_json(f"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/{i.lower()}/roster", intentos=2)
+            js = []
+            for a in r.get("athletes") or []:
+                n = (a.get("displayName") or a.get("fullName") or "").strip()
+                if n:
+                    js.append([n, str(a.get("jersey") or ""), ((a.get("position") or {}).get("abbreviation") or "")])
+            if js:
+                nba_p[i] = js
+            else:
+                fallas.append(f"{i}: sin jugadores")
+        except Exception as e:
+            fallas.append(f"{i}: {e}"[:80])
+    if not nba_p:
+        raise RuntimeError("no se pudo leer ningún plantel: " + "; ".join(fallas[:3]))
+    nuevo = dict(viejo)
+    nuevo["nba"] = {k: nba_p[k] for k in sorted(nba_p) if k in ids}
+    if len(fallas) < len(ids) / 2:  # si falló la mitad, se reintenta en la próxima corrida
+        nuevo["dia"] = HOY.isoformat()
+    guardar("jugadores.json", nuevo)
+    estado["planteles"] = {"ok": True, "jugadores": sum(len(v) for v in nuevo["nba"].values()), "fallas": fallas[:10]}
+
+
 # ---------------------------------------------------------------- main
 def main():
-    pasos = sys.argv[1:] or ["vivo", "nba", "basquetpass", "escudos", "fotos"]
+    pasos = sys.argv[1:] or ["vivo", "nba", "basquetpass", "escudos", "fotos", "planteles"]
     estado = leer("estado.json", {}) or {}
     for nombre in pasos:
-        fn = {"vivo": vivo, "nba": nba, "basquetpass": basquetpass, "escudos": escudos, "fotos": fotos}[nombre]
+        fn = {"vivo": vivo, "nba": nba, "basquetpass": basquetpass, "escudos": escudos, "fotos": fotos, "planteles": planteles}[nombre]
         try:
             fn(estado)
         except Exception as e:

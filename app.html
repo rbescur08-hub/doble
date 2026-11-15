@@ -39,10 +39,19 @@ header{background:var(--band);color:var(--band-ink);position:sticky;top:env(safe
 .search input::placeholder{color:var(--band-muted)}
 .search input:focus{outline:2px solid var(--accent);outline-offset:0;background:rgba(255,255,255,.16)}
 .sres{position:absolute;top:calc(100% + 4px);left:0;right:0;min-width:260px;background:var(--card);color:var(--ink);border:1px solid var(--edge);box-shadow:0 8px 24px rgba(16,36,63,.18),0 1px 3px rgba(16,36,63,.12);max-height:min(60vh,420px);overflow-y:auto;z-index:20}
-.sres button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border:0;border-top:1px solid var(--line);background:none;text-align:left;cursor:pointer;font-size:14.5px}
-.sres button:first-child{border-top:0}
-.sres button:hover,.sres button.act{background:var(--bar)}
-.sres button span{color:var(--muted);font-size:12.5px;margin-left:auto;white-space:nowrap}
+.sres .srow{display:flex;border-top:1px solid var(--line)}
+.sres .srow:first-of-type{border-top:0}
+.sres .srow:hover,.sres .srow.act{background:var(--bar)}
+.sres button{display:flex;align-items:center;gap:8px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;font-size:14.5px;color:inherit}
+.sres .go{flex:1;min-width:0;padding:8px 4px 8px 10px;flex-wrap:wrap;row-gap:0}
+.sres .go b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.sres .go span{color:var(--muted);font-size:12.5px;margin-left:auto;white-space:nowrap}
+.sres .go .ty{margin-left:0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);width:60px;flex:none}
+.sres .st{flex:none;width:44px;min-height:40px;justify-content:center;font-size:19px;line-height:1;color:var(--faint)}
+.sres .st[aria-pressed="true"]{color:var(--star)}
+.sres .st:hover{color:var(--star)}
+.sres .hd{padding:6px 10px;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--bar)}
+.sres .cl{height:18px;width:auto;margin:0}
 .sres .none{padding:10px;color:var(--muted);font-size:14px}
 .sres .cr{margin:0}
 .sections{display:flex;overflow-x:auto;scrollbar-width:none}
@@ -236,6 +245,15 @@ button.tc:hover{border-color:var(--accent)}
 .favbtn[aria-pressed="true"]{border-color:var(--star)}
 .favbtn[aria-pressed="true"]::before{content:"★ ";color:var(--star)}
 .favbtn[aria-pressed="false"]::before{content:"☆ "}
+.favbtn.sm{min-height:30px;padding:0 10px;font-size:13px}
+.club .acts{display:flex;flex-wrap:wrap;gap:8px 16px}
+.club .acts .cr{margin-right:5px}
+.zfav{border:0;background:none;cursor:pointer;font-size:17px;line-height:1;padding:0 2px;color:var(--faint);margin-left:auto}
+.zfav[aria-pressed="true"]{color:var(--star)}
+.box h2 .zfav+span{margin-left:0}
+.sec.mine h3{background:var(--band);color:var(--band-ink)}
+.favnote{font-size:13.5px;color:var(--muted);margin:0 0 10px;padding:7px 10px;background:var(--card);border:1px solid var(--edge);border-left:3px solid var(--star)}
+.favnote b{color:var(--ink)}
 .form5{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
 .form5 .lbl{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-right:6px}
 .chip{width:24px;height:24px;display:inline-grid;place-items:center;font-size:13px;font-weight:700}
@@ -321,7 +339,7 @@ button.tc:hover{border-color:var(--accent)}
 @media (max-width:520px){
   .upd{display:none}
   .search{max-width:none}
-  .sres{min-width:0}
+  .sres{min-width:0;position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 54px);max-height:min(70vh,460px)}
   .lhead h1{font-size:23px}
   .club h1{font-size:24px}
   .mrow{padding:7px 8px;font-size:14px}
@@ -354,9 +372,9 @@ button.tc:hover{border-color:var(--accent)}
     <div class="top">
       <button class="brand" data-sec="hoy" aria-label="La Naranja, ir a hoy">la naranja<i class="ball"></i></button>
       <div class="search" role="search">
-        <label class="sr" for="q">Buscar equipo</label>
+        <label class="sr" for="q">Buscar liga, equipo, zona o jugador</label>
         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.6" y2="16.6"></line></svg>
-        <input id="q" type="search" placeholder="Buscar equipo" autocomplete="off" aria-controls="sres" aria-expanded="false">
+        <input id="q" type="search" placeholder="Buscar liga, equipo, zona o jugador" autocomplete="off" aria-controls="sres" aria-expanded="false">
         <div class="sres" id="sres" role="listbox" hidden></div>
       </div>
       <div class="upd" id="upd"></div>
@@ -375,7 +393,7 @@ button.tc:hover{border-color:var(--accent)}
   </main>
   <div class="foot">
     <span>Todos los horarios son de Argentina. Resultados y tablas salen de las fuentes oficiales: la AdC (laliganacional.com.ar), la Euroliga, la ACB, FIBA y ESPN para la NBA. Los canales salen de las grillas de Basquetpass y de cada señal. Se actualiza solo varias veces por día. <a href="/fuentes/">Fuentes y contacto</a>.</span>
-    <span>Las noticias son resúmenes propios con link a la nota original. Tus equipos y tus canales quedan guardados en este navegador.</span>
+    <span>Las noticias son resúmenes propios con link a la nota original. Tus favoritos y tus canales quedan guardados en este navegador.</span>
   </div>
 </div>
 
@@ -389,7 +407,7 @@ const COMP = {
   feb:{n:"FeBAMBA · Copa Oro", sec:"zon"}, amb:{n:"Mar del Plata · AMB", sec:"zon"}
 };
 const ORDER = ["lnb","la","lfb","sel","lsb","bcla","el","acb","nba","ldd","bbo","bbp","feb","amb"];
-const SECS = [["hoy","Hoy"],["arg","Argentina"],["int","Internacional"],["mun","Mundo"],["zon","Zonales y formativas"],["argentinos","Argentinos en el mundo"],["noticias","Noticias"],["mis","★ Mis equipos"]];
+const SECS = [["hoy","Hoy"],["arg","Argentina"],["int","Internacional"],["mun","Mundo"],["zon","Zonales y formativas"],["argentinos","Argentinos en el mundo"],["noticias","Noticias"],["mis","★ Favoritos"]];
 const SOON = {arg:["Liga Federal (2027)","Pre Federal y regionales"]};
 const NCOMP = [["todas","Todas"],["lnb","Liga Nacional"],["la","Liga Argentina"],["lfb","Liga Femenina"],["federal","Federal"],["zonales","Ligas zonales"],["formativas","Formativas y selecciones"],["seleccion","Selección"],["intl","Copas"],["el","Euroliga"],["acb","Liga Endesa"],["europa","Resto de Europa"],["argentinos","Argentinos afuera"],["nba","NBA"]];
 const NZONA = [["todas","Todas"],["norte","Norte"],["centro","Centro"],["litoral","Litoral"],["cuyo","Cuyo"],["buenosaires","Buenos Aires"],["patagonia","Patagonia"],["sudamerica","Sudamérica"],["espana","España"],["europa","Europa"],["nba","EE.UU."]];
@@ -398,8 +416,8 @@ const SLUG = {lnb:"liga-nacional",la:"liga-argentina",lfb:"liga-femenina",sel:"s
 const BRAND = "La Naranja";
 function syncUrl(){
   try{
-    const path = S.comp && SLUG[S.comp] && !S.team ? "/"+SLUG[S.comp]+"/" : "/";
-    const hash = !S.comp && S.sec!=="hoy" && !S.team ? "#"+S.sec : "";
+    const path = S.comp && SLUG[S.comp] && !S.team && !S.player ? "/"+SLUG[S.comp]+"/" : "/";
+    const hash = !S.comp && S.sec!=="hoy" && !S.team && !S.player ? "#"+S.sec : "";
     if(location.pathname+location.hash !== path+hash) history.replaceState(null, "", path+hash);
     const sn = (SECS.find(s=>s[0]===S.sec)||[])[1];
     document.title = S.comp ? `${COMP[S.comp].n}: resultados, tabla y dónde ver | ${BRAND}` : (S.sec==="hoy" ? `${BRAND} · Básquet hoy: partidos, resultados y dónde verlos` : `${sn} | ${BRAND}`);
@@ -465,8 +483,46 @@ let CAN = [];
 try { CAN = JSON.parse(localStorage.getItem("doble-canales")||"[]") || []; } catch(e){ CAN = []; }
 const saveCan = () => { try{ localStorage.setItem("doble-canales", JSON.stringify(CAN)); }catch(e){} };
 const isFav = (l,id) => FAVS.includes(l+":"+id);
+// Favoritos: equipo "liga:id" (formato original), competencia "liga:<id>", zona "zona:<liga>:<grupo>", jugador "jug:<nombre>"
+const normq = t => String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
+const favLiga = l => FAVS.includes("liga:"+l);
+const zonaKey = (l,gi) => "zona:"+l+":"+normq(DATA[l]?.tablas[gi]?.grupo);
+const favZonaOf = (l,id) => (DATA[l]?.tablas||[]).some((t,gi)=>FAVS.includes(zonaKey(l,gi)) && t.filas.some(r=>r.id===id));
+let PLAYERS = [], PIDX = {};
+function buildPlayers(jug){
+  PLAYERS = []; PIDX = {};
+  const add = (n, sub, refs, x) => {
+    const k = "jug:"+normq(n); if(k==="jug:") return;
+    const refsOk = (refs||[]).filter(r=>{ const [l,id]=r.split(":"); return DATA[l]?.teams[id]; });
+    if(PIDX[k]){ for(const r of refsOk) if(!PIDX[k].refs.includes(r)) PIDX[k].refs.push(r); return; }
+    const p = {k, n, nn:normq(n), sub, refs:refsOk, ...(x||{})};
+    PIDX[k] = p; PLAYERS.push(p);
+  };
+  for(const j of ARG?.jugadores||[]) add(j.n, `${j.eq} · ${j.pais}`, j.refs, {arg:true, comps:j.comps});
+  for(const j of ARG?.dts||[]) add(j.n, `DT de ${j.eq} · ${j.pais}`, j.refs, {arg:true, dt:true, comps:j.comps});
+  for(const l in (jug||{})){ if(!DATA[l] || !COMP[l]) continue;
+    for(const id in jug[l]){ if(!DATA[l].teams[id]) continue;
+      for(const p of jug[l][id]||[]) add(p[0], `${tname(l,id)} · ${COMP[l].n}`, [l+":"+id], {num:p[1]||"", pos:p[2]||""}); } }
+}
+const favPlayersOf = m => FAVS.filter(f=>f.startsWith("jug:")).map(f=>PIDX[f]).filter(p=>p && (p.refs.includes(m.liga+":"+m.h)||p.refs.includes(m.liga+":"+m.a)));
+// Prioridad de un partido según tus favoritos: 4 equipo, 3 jugador, 2 zona, 1 competencia
+function favInfo(m){
+  if(!FAVS.length) return null;
+  if(isFav(m.liga,m.h)||isFav(m.liga,m.a)) return {lv:4, why:"Tu equipo"};
+  const pj = favPlayersOf(m); if(pj.length) return {lv:3, why:"Juega "+pj.slice(0,2).map(p=>p.n.split(" ").slice(-1)[0]).join(" y ")};
+  if(favZonaOf(m.liga,m.h)||favZonaOf(m.liga,m.a)) return {lv:2, why:"Tu zona"};
+  if(favLiga(m.liga)) return {lv:1, why:"Tu liga"};
+  return null;
+}
+const favLv = m => favInfo(m)?.lv || 0;
+function favItem(k){
+  if(k.startsWith("liga:")){ const l=k.slice(5); return DATA[l] ? {t:"liga", k, l, n:COMP[l].n, sub:"Competencia"} : null; }
+  if(k.startsWith("zona:")){ const [,l,g]=k.split(":"); const gi=(DATA[l]?.tablas||[]).findIndex(t=>normq(t.grupo)===g); return gi>=0 ? {t:"zona", k, l, gi, n:DATA[l].tablas[gi].grupo, sub:COMP[l].n} : null; }
+  if(k.startsWith("jug:")){ const p=PIDX[k]; return p ? {t:"jug", k, n:p.n, sub:p.sub} : null; }
+  const [l,id]=k.split(":"); return DATA[l]?.teams[id] ? {t:"equipo", k, l, id, n:tname(l,id), sub:COMP[l].n} : null;
+}
 
-const S = { sec:"hoy", comp:null, tab:"partidos", team:null, date:TODAY, open:null, month:null, hoyF:"todas", hoyV:"comp", puedo:false, verCan:false, nRange:"hoy", nComp:"todas", nZona:"todas" };
+const S = { sec:"hoy", comp:null, tab:"partidos", team:null, player:null, date:TODAY, open:null, month:null, hoyF:"todas", hoyV:"comp", puedo:false, verCan:false, nRange:"hoy", nComp:"todas", nZona:"todas" };
 const h0 = (location.hash||"").slice(1) || window.RUTA || "";
 if(SECS.some(s=>s[0]===h0)) S.sec = h0;
 else if(COMP[h0]) { S.sec = COMP[h0].sec; S.comp = h0; }
@@ -705,7 +761,7 @@ function argOf(m){
   return js.map(j=>j.n.split(" ").slice(-1)[0]);
 }
 function whyOf(m){
-  if(favOf(m)) return "Tu equipo";
+  const fi = favInfo(m); if(fi) return fi.why;
   if(m.liga==="sel") return m.info.fase || "Eliminatorias";
   const f = (m.info.fase||"").toLowerCase();
   if(/final|playoff|cuartos|semi/.test(f)) return m.info.fase;
@@ -733,7 +789,13 @@ function viewHoy(){
   if(S.verCan) html += `<div class="chips" role="group" aria-label="Canales que tengo"><span class="lbl">Tengo</span>${CANALES.map(([k,n])=>`<button data-canal="${esc(k)}" aria-pressed="${CAN.includes(k)}">${esc(n)}</button>`).join("")}</div>`;
   html += chipRow("", [["todas","Todo"],["arg","Argentina"],["int","Internacional"],["mun","Mundo"],["zon","Zonales"]], S.hoyF, "hoyf");
   if(!day.length){ html += S.puedo ? `<div class="empty"><h2>Con tus canales no hay partidos este día</h2><p>Elegí otro día o sacá el filtro «Solo lo que puedo ver».</p></div>` : emptyDay(pool); return html; }
-  const dest = day.filter(m=>whyOf(m)).sort(byTime).slice(0,8);
+  const mios = day.filter(m=>favLv(m)>1).sort(byTime);
+  if(mios.length) html += block(`★ Tus favoritos · ${mios.length} ${mios.length===1?"partido":"partidos"}`, mios, "", {comp:true, why:whyOf}, "mine");
+  else if(S.date===TODAY && FAVS.some(f=>!f.startsWith("liga:"))){
+    const nx = allMatches().filter(m=>m.d>TODAY && !score(m) && favLv(m)>1).sort((a,b)=>(a.d+(a.t||"99")).localeCompare(b.d+(b.t||"99")))[0];
+    if(nx) html += `<p class="favnote">★ Hoy no juegan tus favoritos. El próximo: <b>${esc(tname(nx.liga,nx.h))} vs ${esc(tname(nx.liga,nx.a))}</b>, ${esc(fmtShort(nx.d))}${nx.t?" "+esc(nx.t):""} · ${esc(COMP[nx.liga].n)} · ${esc(tvLabel(nx))}</p>`;
+  }
+  const dest = day.filter(m=>favLv(m)<=1 && whyOf(m)).sort((a,b)=>favLv(b)-favLv(a)||byTime(a,b)).slice(0,8);
   if(dest.length) html += block("Para no perderse", dest, "", {comp:true, why:whyOf}, "hot");
   if(S.hoyV==="hora"){
     const ms = [...day].sort(byTime);
@@ -750,9 +812,9 @@ function viewHoy(){
     }
     html += `<section class="sec"><h3>Todos por horario</h3><div class="matches">${body}</div></section>`;
   } else {
-    for(const l of keys){
-      const ms = day.filter(m=>m.liga===l).sort(byTime);
-      if(ms.length) html += block(`<button data-comp="${l}">${compLogo(l)}${esc(COMP[l].n)}</button>`, ms, `<span class="tv">${tvHtml(DATA[l].meta.tv||"")}</span>`);
+    for(const l of [...keys].sort((a,b)=>favLiga(b)-favLiga(a))){
+      const ms = day.filter(m=>m.liga===l).sort((a,b)=>(favLv(b)>1)-(favLv(a)>1)||byTime(a,b));
+      if(ms.length) html += block(`<button data-comp="${l}">${compLogo(l)}${favLiga(l)?"★ ":""}${esc(COMP[l].n)}</button>`, ms, `<span class="tv">${tvHtml(DATA[l].meta.tv||"")}</span>`);
     }
   }
   return html;
@@ -762,7 +824,7 @@ function viewPartidos(l){
   if(!pool.length) return `<div class="empty"><h2>Todavía sin calendario</h2><p>${esc(DATA[l].meta.playoffs||"El organizador todavía no publicó las fechas.")}</p></div>`;
   const day = pool.filter(m=>m.d===S.date);
   let html = dayStrip(pool);
-  html += day.length ? block(esc(fmtLong(S.date)), [...day].sort((a,b)=>favOf(b)-favOf(a)||byTime(a,b))) : emptyDay(pool);
+  html += day.length ? block(esc(fmtLong(S.date)), [...day].sort((a,b)=>(favLv(b)>1)-(favLv(a)>1)||byTime(a,b))) : emptyDay(pool);
   const recent = pool.filter(m=>m.d<S.date && score(m)).slice(-6).reverse();
   if(recent.length) html += block("Últimos resultados", recent);
   return html;
@@ -793,7 +855,8 @@ function tableBox(l, gi, compact, highlight){
   const legend = Object.keys(z).length ? `<div class="legend">${["z1","z2","z3"].filter(k=>z[k]).map(k=>`<span><i style="background:var(--zone${k.slice(1)})"></i>${esc(z[k][2])}</span>`).join("")}</div>` : "";
   const head = vic ? `<th>G</th><th>P</th><th>%</th>` : `<th>Pts</th><th>PJ</th><th>PG</th><th>PP</th>`;
   const tail = abb ? "" : `${compact?"":"<th>PF</th><th>PC</th>"}<th>Dif</th>`;
-  return `<div class="box"><h2>${esc(D.tablas.length>1?t.grupo:"Posiciones")} <span>${esc(COMP[l].n)}</span></h2>
+  const zf = D.tablas.length>1 ? (()=>{ const k=zonaKey(l,gi), on=FAVS.includes(k); return `<button class="zfav" data-fav="${esc(k)}" aria-pressed="${on}" aria-label="${on?"Dejar de seguir":"Seguir"} ${esc(t.grupo)}" title="${on?"En tus favoritos":"Seguir esta zona"}">${on?"★":"☆"}</button>`; })() : "";
+  return `<div class="box"><h2>${esc(D.tablas.length>1?t.grupo:"Posiciones")}${zf} <span>${esc(COMP[l].n)}</span></h2>
     <div class="tw"><table><thead><tr><th>#</th><th class="l">Equipo</th>${head}${tail}</tr></thead><tbody>${rows}</tbody></table></div>
     ${legend}<div class="src">${esc(D.meta.tablaNota||"Tabla oficial")} · ${D.meta.fuente?`<a href="${esc(D.meta.fuente)}" target="_blank" rel="noopener">${esc(D.meta.fuenteNombre||"fuente")}</a>`:""}</div></div>`;
 }
@@ -845,9 +908,10 @@ function viewClub(){
   const upcoming = s.ms.filter(m=>!score(m) && m.d>=TODAY).slice(0,5);
   const past = s.ms.filter(m=>score(m) || m.d<TODAY).slice(-8).reverse();
   const arg = (ARG?.jugadores||[]).filter(j=>(j.refs||[]).includes(`${l}:${id}`));
+  const plantel = PLAYERS.filter(p=>!p.arg && p.refs.includes(`${l}:${id}`));
   let html = `<button class="btn" data-back style="margin:12px 0 8px">Volver</button>
   <div class="club"><div class="row1"><div><h1>${crest(l,id).replace('class="cr"','class="cr big"')}${esc(T.n)}</h1><p>${esc(COMP[l].n)}${T.est?`. Juega de local en ${esc(pretty(T.est))}`:""}</p>${arg.length?`<p>Argentinos en el plantel: ${arg.map(j=>esc(j.n)).join(", ")}</p>`:""}</div>
-    <button class="favbtn" data-fav="${l}:${id}" aria-pressed="${fav}">${fav?"En mis equipos":"Seguir equipo"}</button></div>
+    <button class="favbtn" data-fav="${l}:${id}" aria-pressed="${fav}">${fav?"En favoritos":"Seguir equipo"}</button></div>
     <div class="stats">
       ${s.pos?`<div><b>${s.pos}.º</b><span>${esc(DATA[l].tablas.length>1?DATA[l].tablas[s.grupo].grupo:"Posición")}</span></div>`:""}
       ${s.row?`<div><b>${s.row.pg}–${s.row.pp}</b><span>Ganados–perdidos</span></div>${(s.row.pf||s.row.pc)?`<div><b>${s.row.pf-s.row.pc>0?"+":""}${s.row.pf-s.row.pc}</b><span>Diferencia</span></div>`:""}`:""}
@@ -857,6 +921,7 @@ function viewClub(){
   if(upcoming.length) html += block("Próximos partidos", upcoming);
   if(past.length) html += block("Últimos partidos", past);
   if(!upcoming.length && !past.length) html += `<div class="empty"><p>No hay partidos cargados para este equipo.</p></div>`;
+  if(plantel.length) html += `<div class="daytitle">Plantel</div><div class="grid">${plantel.map(playerCard).join("")}</div>`;
   return {html, side: s.grupo!==null ? tableBox(l, s.grupo, true, id) : ""};
 }
 
@@ -877,21 +942,62 @@ function viewArgentinos(){
   return html;
 }
 
+const playerCard = p => `<button class="tc" data-go="${esc(p.k)}"><b>${FAVS.includes(p.k)?"★ ":""}${esc(p.n)}</b><span>${p.num?`#${esc(p.num)}`:""}${p.num&&p.pos?" · ":""}${esc(p.pos||"")}${!p.num&&!p.pos?esc(p.sub):""}</span></button>`;
+const byDT = (a,b) => (a.d+(a.t||"99")).localeCompare(b.d+(b.t||"99"));
+function viewJugador(){
+  const p = PIDX[S.player]; if(!p){ S.player=null; return null; }
+  const fav = FAVS.includes(p.k);
+  const ms = p.refs.flatMap(r=>{ const [l,id]=r.split(":"); return (DATA[l]?.matches||[]).filter(m=>m.h===id||m.a===id); });
+  const up = ms.filter(m=>!score(m) && m.d>=TODAY).sort(byDT).slice(0,6);
+  const past = ms.filter(m=>score(m)).sort(byDT).slice(-5).reverse();
+  const det = [p.dt?"Entrenador":"", p.num?`#${p.num}`:"", p.pos||""].filter(Boolean).join(" · ");
+  let html = `<button class="btn" data-back style="margin:12px 0 8px">Volver</button>
+  <div class="club"><div class="row1"><div><h1>${esc(p.n)}</h1><p>${esc(p.sub)}${det?` · ${esc(det)}`:""}</p>${p.comps?.length?`<p>Juega: ${p.comps.map(esc).join(", ")}</p>`:""}</div>
+    <button class="favbtn" data-fav="${esc(p.k)}" aria-pressed="${fav}">${fav?"En favoritos":"Seguir jugador"}</button></div>
+    ${p.refs.length?`<div class="acts">${p.refs.map(r=>{ const [l,id]=r.split(":"); return `<button class="btn link" data-team="${r}">${crest(l,id)}Ver ${esc(tname(l,id))} (${esc(COMP[l].n)})</button>`; }).join("")}</div>`:""}
+  </div>`;
+  if(up.length) html += block("Próximos partidos de su equipo", up);
+  if(past.length) html += block("Últimos partidos de su equipo", past);
+  if(!p.refs.length) html += `<div class="empty"><p>Todavía no tenemos cargado el calendario de su liga. Si lo seguís, te avisamos cuando aparezca en una competencia que cubrimos.</p></div>`;
+  else html += `<p class="note" style="margin-top:10px">Mostramos los partidos de su equipo. Las estadísticas individuales todavía no están cargadas.</p>`;
+  return {html, side:""};
+}
 function viewMis(){
-  if(!FAVS.length) return `<div class="empty"><h2>Todavía no seguís equipos</h2><p>Entrá a cualquier equipo y tocá <b>Seguir equipo</b>. Sus partidos van a aparecer acá y primeros en la portada.</p><p style="margin-top:10px"><button class="btn p" data-comp="lnb">Ver equipos de la Liga Nacional</button></p></div>`;
-  return `<div class="grid">${FAVS.map(f=>{
-    const [l,id] = f.split(":"); if(!DATA[l]?.teams[id]) return "";
-    const s = teamStats(l,id); const lp = s.played.at(-1);
+  const items = FAVS.map(favItem).filter(Boolean);
+  if(!items.length) return `<div class="empty"><h2>Todavía no tenés favoritos</h2><p>Buscá una liga, un equipo, una zona o un jugador en el buscador de arriba y tocá la <b>☆</b>. Sus partidos van a aparecer acá y primeros en la portada.</p><p style="margin-top:10px"><button class="btn p" data-comp="lnb">Ver equipos de la Liga Nacional</button></p></div>`;
+  let html = "";
+  const prox = allMatches().filter(m=>m.d>=TODAY && m.d<=addDays(TODAY,7) && !score(m) && favLv(m)>1).sort(byDT).slice(0,12);
+  if(prox.length){
+    const dias = [...new Set(prox.map(m=>m.d))];
+    html += dias.map(d=>block(`★ ${d===TODAY?"Hoy":d===addDays(TODAY,1)?"Mañana":esc(fmtLong(d))}`, prox.filter(m=>m.d===d), "", {comp:true, why:whyOf}, "mine")).join("");
+  } else if(items.some(i=>i.t!=="liga")) html += `<p class="favnote">Tus favoritos no tienen partidos cargados en los próximos 7 días.</p>`;
+  const sec = (tit, arr, card) => arr.length ? `<div class="daytitle">${tit}</div><div class="grid">${arr.map(card).join("")}</div>` : "";
+  html += sec("Equipos", items.filter(i=>i.t==="equipo"), i=>{
+    const {l,id} = i, s = teamStats(l,id), lp = s.played.at(-1);
     const lastTxt = lp ? (()=>{const sc=score(lp.m); const mine=lp.m.h===id?sc.hs:sc.as, opp=lp.m.h===id?sc.as:sc.hs; return `${lp.w?"Ganó":"Perdió"} ${mine}–${opp} ${vsTxt(l,id,lp.m)}`;})() : "";
     const nx = s.next ? `${fmtShort(s.next.d)}${s.next.t?" "+s.next.t:""} · ${vsTxt(l,id,s.next)}` : "";
     return `<button class="tc" data-team="${l}:${id}"><b>${crest(l,id)}★ ${esc(tname(l,id))}</b><span>${esc(COMP[l].n)}${s.pos?` · ${s.pos}.º`:""}</span>${lastTxt?`<span>${esc(lastTxt)}</span>`:""}${nx?`<em>Próximo: ${esc(nx)}</em>`:""}</button>`;
-  }).join("")}</div>`;
+  });
+  html += sec("Jugadores", items.filter(i=>i.t==="jug"), i=>{
+    const p = PIDX[i.k];
+    const nx = p.refs.flatMap(r=>{ const [l,id]=r.split(":"); return DATA[l].matches.filter(m=>(m.h===id||m.a===id) && !score(m) && m.d>=TODAY).map(m=>({m,l,id})); }).sort((a,b)=>byDT(a.m,b.m))[0];
+    return `<button class="tc" data-go="${esc(i.k)}"><b>★ ${esc(p.n)}</b><span>${esc(p.sub)}</span>${nx?`<em>Próximo: ${esc(fmtShort(nx.m.d))}${nx.m.t?" "+esc(nx.m.t):""} · ${esc(vsTxt(nx.l,nx.id,nx.m))}</em>`:""}</button>`;
+  });
+  html += sec("Competencias", items.filter(i=>i.t==="liga"), i=>{
+    const hoy = DATA[i.l].matches.filter(m=>m.d===TODAY).length;
+    return `<button class="tc" data-go="${esc(i.k)}"><b>${compLogo(i.l)} ★ ${esc(i.n)}</b><span>${Object.keys(DATA[i.l].teams).length} equipos</span><em>${hoy?`Hoy: ${hoy} ${hoy===1?"partido":"partidos"}`:"Hoy no tiene partidos"}</em></button>`;
+  });
+  html += sec("Zonas", items.filter(i=>i.t==="zona"), i=>{
+    const f = DATA[i.l].tablas[i.gi].filas;
+    return `<button class="tc" data-go="${esc(i.k)}"><b>★ ${esc(i.n)}</b><span>${esc(i.sub)} · ${f.length} equipos</span>${f[0]?`<em>Puntero: ${esc(tname(i.l,f[0].id))}</em>`:""}</button>`;
+  });
+  return html;
 }
 
 // ---------- render ----------
 function render(){
   const c = document.getElementById("content"), side = document.getElementById("side"), tabs = document.getElementById("tabs"), lh = document.getElementById("lhead"), main = document.getElementById("main"), subs = document.getElementById("subs");
-  document.getElementById("sections").innerHTML = SECS.map(([k,n])=>`<button data-sec="${k}" aria-pressed="${S.sec===k && !S.team}">${esc(k==="mis"&&FAVS.length?`${n} (${FAVS.length})`:n)}</button>`).join("");
+  document.getElementById("sections").innerHTML = SECS.map(([k,n])=>`<button data-sec="${k}" aria-pressed="${S.sec===k && !S.team && !S.player}">${esc(k==="mis"&&FAVS.length?`${n} (${FAVS.length})`:n)}</button>`).join("");
   const stamps = ORDER.map(l=>DATA[l]?.meta?.actualizado).filter(Boolean).sort();
   try { document.getElementById("upd").textContent = stamps.length ? "Actualizado " + new Date(stamps.at(-1)).toLocaleString("es-AR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:"America/Buenos_Aires"}) : ""; } catch(e){}
   main.classList.remove("single"); side.hidden = false; subs.hidden = true; tabs.hidden = true; lh.innerHTML = ""; side.innerHTML = "";
@@ -902,6 +1008,10 @@ function render(){
   }
   syncUrl();
   const finish = () => { if(!side.innerHTML) { side.hidden = true; main.classList.add("single"); } };
+  if(S.player){
+    const v = viewJugador(); if(!v) return render();
+    c.innerHTML = v.html; return finish();
+  }
   if(S.team){
     const v = viewClub(); if(!v) return render();
     c.innerHTML = v.html; side.innerHTML = v.side; return finish();
@@ -909,7 +1019,7 @@ function render(){
   if(S.sec==="hoy"){ c.innerHTML = viewHoy(); side.innerHTML = newsSide(5) + (DATA.lnb?tableBox("lnb",0,true):""); return finish(); }
   if(S.sec==="noticias"){ lh.innerHTML = `<div class="lhead"><h1>Noticias</h1><span class="meta">Resúmenes propios con link a la nota original</span></div>`; c.innerHTML = viewNoticias(); return finish(); }
   if(S.sec==="argentinos"){ lh.innerHTML = `<div class="lhead"><h1>Argentinos en el mundo</h1></div>`; c.innerHTML = viewArgentinos(); side.innerHTML = newsSideArg(); return finish(); }
-  if(S.sec==="mis"){ lh.innerHTML = `<div class="lhead"><h1>Mis equipos</h1><span class="meta">Guardados en este navegador</span></div>`; c.innerHTML = viewMis(); return finish(); }
+  if(S.sec==="mis"){ lh.innerHTML = `<div class="lhead"><h1>Favoritos</h1><span class="meta">Ligas, equipos, zonas y jugadores que seguís. Quedan guardados en este navegador</span></div>`; c.innerHTML = viewMis(); return finish(); }
   // sección con competencias
   const comps = ORDER.filter(k=>COMP[k].sec===S.sec && DATA[k]);
   if(!S.comp || !comps.includes(S.comp)) S.comp = comps[0];
@@ -919,7 +1029,7 @@ function render(){
   const l = S.comp, D = DATA[l];
   if(!D){ c.innerHTML = `<div class="empty"><h2>Sin datos</h2><p>Esta sección todavía no tiene datos cargados.</p></div>`; return finish(); }
   const played = D.matches.filter(m=>score(m)).length;
-  lh.innerHTML = `<div class="lhead"><h1>${compLogo(l).replace('class="cl"','class="cl big"')}${esc(D.meta.nombre)} ${esc(D.meta.temporada||"")}</h1><span class="meta">${Object.keys(D.teams).length} equipos${D.matches.length?`, ${played} de ${D.matches.length} partidos jugados`:""}</span><span class="tvl"><span>Dónde verla:</span> ${D.meta.tv?tvHtml(D.meta.tv):"a confirmar"}</span></div>`;
+  lh.innerHTML = `<div class="lhead"><h1>${compLogo(l).replace('class="cl"','class="cl big"')}${esc(D.meta.nombre)} ${esc(D.meta.temporada||"")}</h1><span class="meta">${Object.keys(D.teams).length} equipos${D.matches.length?`, ${played} de ${D.matches.length} partidos jugados`:""}</span><button class="favbtn sm" data-fav="liga:${l}" aria-pressed="${favLiga(l)}">${favLiga(l)?"En favoritos":"Seguir liga"}</button><span class="tvl"><span>Dónde verla:</span> ${D.meta.tv?tvHtml(D.meta.tv):"a confirmar"}</span></div>`;
   const T = [["partidos","Partidos"],["fixture","Fixture"],["posiciones","Posiciones"],["equipos","Equipos"],["formato",l==="lnb"||l==="el"?"Playoffs":"Formato"]];
   tabs.hidden = false;
   tabs.innerHTML = T.map(([k,n])=>`<button role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${n}</button>`).join("");
@@ -950,31 +1060,59 @@ function newsSideArg(){
 
 // ---------- eventos ----------
 // ---------- buscador ----------
-const normq = t => String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
-function searchTeams(q){
+const LALIAS = {lnb:"lnb liga nacional la liga primera", la:"liga argentina segunda tna", lfb:"lfb liga femenina", sel:"seleccion argentina eliminatorias mundial fiba", lsb:"lsb liga sudamericana", bcla:"bcla bcl americas champions", el:"euroliga euroleague", acb:"acb liga endesa espana", nba:"nba", ldd:"ldd liga de desarrollo liga proximo", bbo:"bahia blanca lbb oro abb", bbp:"bahia blanca lbb plata abb", feb:"febamba copa oro metropolitana buenos aires", amb:"amb mar del plata marplatense"};
+const TYN = {liga:"Liga", equipo:"Equipo", zona:"Zona", jug:"Jugador"};
+function hitOf(n, nq, extra){
+  if(!n) return 0;
+  if(n===nq) return 4;
+  if(n.startsWith(nq)) return 3;
+  if(n.includes(" "+nq)) return 2;
+  if(n.includes(nq)) return 1;
+  const all = n+" "+(extra||""), ts = nq.split(" ");
+  return ts.length>1 && ts.every(t=>all.includes(t)) && ts.some(t=>n.includes(t)) ? 1 : 0;
+}
+function searchAll(q){
   const nq = normq(q); if(nq.length<2) return [];
   const out = [];
-  for(const l of loadedComps()) for(const id of Object.keys(DATA[l].teams)){
-    const n = normq(tname(l,id)), o = normq(DATA[l].meta.oficiales?.[id]||"");
-    const hit = n.startsWith(nq)||n.includes(" "+nq) ? 2 : (n.includes(nq)||o.includes(nq)) ? 1 : 0;
-    if(hit) out.push({l,id,hit,n});
+  for(const l of loadedComps()){
+    const D = DATA[l], cn = normq(COMP[l].n);
+    const hl = Math.max(hitOf(cn,nq), hitOf(normq(D.meta.nombre),nq), ...(LALIAS[l]||"").split(" ").map(w=>w===nq?4:w.startsWith(nq)&&nq.length>2?2:0), hitOf(LALIAS[l]||"",nq)?1:0);
+    if(hl) out.push({t:"liga", k:"liga:"+l, l, hit:hl, n:COMP[l].n, sub:"Competencia"});
+    if(D.tablas.length>1) D.tablas.forEach((t,gi)=>{ const h = hitOf(normq(t.grupo), nq, cn); if(h) out.push({t:"zona", k:zonaKey(l,gi), l, gi, hit:h, n:t.grupo, sub:COMP[l].n}); });
+    for(const id of Object.keys(D.teams)){
+      const h = Math.max(hitOf(normq(tname(l,id)), nq, cn), hitOf(normq(D.meta.oficiales?.[id]), nq) ? 1 : 0);
+      if(h) out.push({t:"equipo", k:l+":"+id, l, id, hit:h, n:tname(l,id), sub:COMP[l].n});
+    }
   }
-  return out.sort((a,b)=>b.hit-a.hit || ORDER.indexOf(a.l)-ORDER.indexOf(b.l) || a.n.localeCompare(b.n)).slice(0,14);
+  for(const p of PLAYERS){ const h = hitOf(p.nn, nq, normq(p.sub)); if(h) out.push({t:"jug", k:p.k, hit:h, n:p.n, sub:p.sub}); }
+  const TO = {liga:0, equipo:1, zona:2, jug:3};
+  return out.sort((a,b)=> FAVS.includes(b.k)-FAVS.includes(a.k) || b.hit-a.hit || TO[a.t]-TO[b.t] || ORDER.indexOf(a.l)-ORDER.indexOf(b.l) || a.n.localeCompare(b.n)).slice(0,24);
+}
+function sresRow(r, i){
+  const on = FAVS.includes(r.k);
+  const ic = r.t==="equipo" ? crest(r.l,r.id) : (r.t==="liga"||r.t==="zona") ? compLogo(r.l) : "";
+  return `<div class="srow${i===sAct?" act":""}"><button role="option" class="go" data-go="${esc(r.k)}" data-sres="1"><span class="ty">${TYN[r.t]}</span>${ic}<b>${esc(r.n)}</b>${r.t==="liga"?"":`<span>${esc(r.sub)}</span>`}</button><button class="st" data-fav="${esc(r.k)}" data-sres="1" aria-pressed="${on}" aria-label="${on?"Sacar de favoritos":"Agregar a favoritos"}: ${esc(r.n)}" title="${on?"Sacar de favoritos":"Agregar a favoritos"}">${on?"★":"☆"}</button></div>`;
 }
 let sAct = 0;
 function showSearch(){
   const q = document.getElementById("q"), box = document.getElementById("sres");
-  const v = q.value; if(normq(v).length<2){ box.hidden = true; q.setAttribute("aria-expanded","false"); return; }
-  const res = searchTeams(v);
+  if(!loaded){ box.hidden = true; return; }
+  const v = q.value;
+  let res, head = "";
+  if(normq(v).length<2){
+    res = FAVS.map(favItem).filter(Boolean).slice(0,12);
+    if(!res.length || document.activeElement!==q){ box.hidden = true; q.setAttribute("aria-expanded","false"); return; }
+    head = `<div class="hd">★ Tus favoritos</div>`;
+  } else res = searchAll(v);
   sAct = Math.min(sAct, Math.max(res.length-1,0));
-  box.innerHTML = res.length ? res.map((r,i)=>`<button role="option" class="${i===sAct?"act":""}" data-team="${r.l}:${r.id}" data-sres="1">${crest(r.l,r.id)}${esc(tname(r.l,r.id))}<span>${esc(COMP[r.l].n)}</span></button>`).join("") : `<div class="none">No encontramos equipos con «${esc(v)}».</div>`;
+  box.innerHTML = res.length ? head + res.map(sresRow).join("") : `<div class="none">No encontramos nada con «${esc(v)}». Probá con el nombre de una liga, un equipo, una zona o un jugador.</div>`;
   box.hidden = false; q.setAttribute("aria-expanded","true");
 }
 const qEl = document.getElementById("q");
 qEl.addEventListener("input", ()=>{ sAct = 0; showSearch(); });
 qEl.addEventListener("focus", showSearch);
 qEl.addEventListener("keydown", e=>{
-  const box = document.getElementById("sres"), items = [...box.querySelectorAll("button")];
+  const box = document.getElementById("sres"), items = [...box.querySelectorAll("button.go")];
   if(e.key==="ArrowDown"||e.key==="ArrowUp"){ if(!items.length) return; e.preventDefault(); sAct = (sAct + (e.key==="ArrowDown"?1:-1) + items.length) % items.length; showSearch(); }
   else if(e.key==="Enter"){ if(items[sAct]){ e.preventDefault(); items[sAct].click(); } }
   else if(e.key==="Escape"){ box.hidden = true; qEl.blur(); }
@@ -984,9 +1122,17 @@ document.addEventListener("click", e=>{ if(!e.target.closest(".search")) documen
 document.addEventListener("click", async e=>{
   const b = e.target.closest("button"); if(!b || b.disabled) return;
   const d = b.dataset;
-  if(d.sec){ S.agenda=false; S.sec=d.sec; S.team=null; S.open=null; S.comp=null; S.tab="partidos"; S.date=TODAY; scrollTo(0,0); }
+  const closeS = () => { if(d.sres){ qEl.value=""; document.getElementById("sres").hidden=true; qEl.setAttribute("aria-expanded","false"); qEl.blur(); } };
+  if(d.go){
+    const k = d.go; S.open=null; S.agenda=false; scrollTo(0,0);
+    if(k.startsWith("jug:")){ S.player=k; S.team=null; }
+    else if(k.startsWith("liga:")||k.startsWith("zona:")){ const l=k.split(":")[1]; S.player=null; S.team=null; S.sec=COMP[l].sec; S.comp=l; S.tab=k.startsWith("zona:")?"posiciones":"partidos"; S.date=TODAY; S.month=null; }
+    else { S.team=k; S.player=null; }
+    closeS();
+  }
+  else if(d.sec){ S.agenda=false; S.sec=d.sec; S.team=null; S.player=null; S.open=null; S.comp=null; S.tab="partidos"; S.date=TODAY; scrollTo(0,0); }
   else if(d.agenda){ S.agenda=true; S.team=null; S.open=null; }
-  else if(d.comp){ S.agenda=false; S.sec=COMP[d.comp].sec; S.comp=d.comp; S.team=null; S.open=null; S.tab="partidos"; S.date=TODAY; S.month=null; scrollTo(0,0); }
+  else if(d.comp){ S.agenda=false; S.sec=COMP[d.comp].sec; S.comp=d.comp; S.team=null; S.player=null; S.open=null; S.tab="partidos"; S.date=TODAY; S.month=null; scrollTo(0,0); }
   else if(d.tab){ S.tab=d.tab; S.open=null; }
   else if(d.date){ S.date=d.date; S.open=null; }
   else if(d.month){ S.month=d.month; S.open=null; }
@@ -998,10 +1144,10 @@ document.addEventListener("click", async e=>{
   else if(d.nrange){ S.nRange=d.nrange; }
   else if(d.ncomp){ S.nComp=d.ncomp; }
   else if(d.nzona){ S.nZona=d.nzona; }
-  else if(d.team){ S.team=d.team; S.open=null; scrollTo(0,0); if(d.sres){ qEl.value=""; document.getElementById("sres").hidden=true; qEl.setAttribute("aria-expanded","false"); qEl.blur(); } }
-  else if("back" in d){ S.team=null; }
+  else if(d.team){ S.team=d.team; S.player=null; S.open=null; scrollTo(0,0); closeS(); }
+  else if("back" in d){ if(S.player) S.player=null; else S.team=null; }
   else if(d.open){ S.open = S.open===d.open ? null : d.open; }
-  else if(d.fav){ FAVS = FAVS.includes(d.fav) ? FAVS.filter(x=>x!==d.fav) : [...FAVS, d.fav]; saveFavs(); }
+  else if(d.fav){ FAVS = FAVS.includes(d.fav) ? FAVS.filter(x=>x!==d.fav) : [...FAVS, d.fav]; saveFavs(); if(d.sres){ render(); showSearch(); return; } }
   else if(d.unfix){ try{ await db.doc("correcciones/"+d.unfix).delete(); }catch(err){ const el=document.getElementById("fe-"+d.unfix); if(el) el.textContent="No se pudo quitar la corrección. Probá de nuevo."; return; } }
   else return;
   render();
@@ -1053,9 +1199,9 @@ render();
   const get = (n, opt) => fetch("/data/"+n+".json", {cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(n); return r.json(); })
     .catch(e=>{ if(opt) return null; throw e; });
   try{
-    const [ligas, noticias, logos, escudos, fotos, extra, nba, bp, vivo, escAuto] = await Promise.all([
+    const [ligas, noticias, logos, escudos, fotos, extra, nba, bp, vivo, escAuto, jug] = await Promise.all([
       get("ligas"), get("noticias"), get("logos"), get("escudos"), get("fotos", true), get("extra", true), get("nba", true), get("bp", true),
-      get("vivo", true), get("escudos_auto", true)]);
+      get("vivo", true), get("escudos_auto", true), get("jugadores", true)]);
     aplicarVivo(ligas, vivo);
     for(const l in (escAuto||{})){ escudos[l] = {...(escAuto[l]||{}), ...(escudos[l]||{})}; }
     if(nba) ligas.nba = nba;
@@ -1077,6 +1223,7 @@ render();
     DATA = next; NEWS = noticias; FOTOS = fo;
     LOGOS = {eq, comp:logos.comp||{}, tv:logos.tv||{}, flag:logos.flag||{}};
     ARG = extra?.argentinos || null; FORM = extra?.formativas || null;
+    buildPlayers(jug);
     loaded = true; render();
   }catch(e){ dbOk = false; loaded = false; render(); }
 })();
