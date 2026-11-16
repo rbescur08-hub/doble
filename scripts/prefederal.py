@@ -79,11 +79,27 @@ def compilar(t, orden):
             filas.append(" ".join([r[0]] + [str(x) for x in n]))
         if filas:
             tablas.append({"grupo": tb.get("grupo") or "Posiciones", "filas": ",".join(filas)})
+    planteles = {}
+    for k, js in (t.get("planteles") or {}).items():
+        if k not in eq:
+            raise ValueError(f"plantel de un equipo desconocido: {k}")
+        lista, vistos = [], set()
+        for j in js or []:
+            j = [j] if isinstance(j, str) else list(j)
+            n = str(j[0] if j else "").strip()
+            if not n or n.lower() in vistos:
+                continue
+            vistos.add(n.lower())
+            lista.append([n, str(j[1] if len(j) > 1 and j[1] is not None else "").strip(), str(j[2] if len(j) > 2 and j[2] else "").strip()])
+        if lista:
+            planteles[k] = lista
     doc = {"nombre": f"Pre Federal · {prov}", "temporada": str(t.get("temporada") or ""), "ambito": "prefederal", "orden": 100 + orden,
            "nombresOk": True, "provincia": prov, "equipos": eq,
            "partidos": ",".join(s for _, s in sorted(partidos)), "tablas": tablas}
     if info:
         doc["info"] = info
+    if planteles:
+        doc["planteles"] = planteles
     if tablas and solo_gp:
         doc["tablaTipo"] = "victorias"
     doc["tablaNota"] = t.get("tablaNota") or "Posiciones según la prensa local"
