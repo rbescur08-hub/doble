@@ -1271,7 +1271,10 @@ render();
     DATA = next; NEWS = noticias; FOTOS = fo;
     LOGOS = {eq, comp:logos.comp||{}, tv:logos.tv||{}, flag:logos.flag||{}};
     ARG = extra?.argentinos || null; FORM = extra?.formativas || null;
-    buildPlayers(jug);
+    // Pre Federal: los planteles vienen dentro de cada torneo
+    const jugTodo = {...(jug||{})};
+    for(const [id, doc] of Object.entries(pf?.torneos||{})) if(doc.planteles) jugTodo[id] = doc.planteles;
+    buildPlayers(jugTodo);
     loaded = true; render();
   }catch(e){ dbOk = false; loaded = false; render(); }
 })();
