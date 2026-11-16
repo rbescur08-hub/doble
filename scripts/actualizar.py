@@ -604,14 +604,74 @@ def _plantel_el(i):
     return sorted(js)
 
 
+_ADC_ROSTER = {}
+
+
+def _plantel_adc(liga):
+    """Planteles de la AdC: el menú de equipos de /{slug}/fixture da la página de cada club y /roster trae una tarjeta por jugador."""
+    slug = ADC_LIGAS[liga]
+
+    def fn(i):
+        if liga not in _ADC_ROSTER:
+            h = get(f"{ADC}/{slug}/fixture")
+            _ADC_ROSTER[liga] = {m.group(1): m.group(0) for m in re.finditer(rf'/{slug}/equipo/(\d+)/\d+/[^"/]+', h)}
+        base = _ADC_ROSTER[liga].get(str(i))
+        if not base:
+            raise RuntimeError("sin página de equipo")
+        h = get(f"{ADC}{base}/roster")
+        js, vistos = [], set()
+        for t in re.findall(r'<a class="tarjeta-jugador"[^>]*title="([^"]*)"', h):
+            n = _nombre_el(html.unescape(t))
+            if n and n not in vistos:
+                vistos.add(n)
+                js.append([n, "", ""])
+        return js
+    return fn
+
+
+ACB_IDS = {"BAR": 2, "BKN": 3, "BRE": 25, "BUR": 549, "CAZ": 16, "COR": 657, "GIR": 591, "ILE": 658, "JOV": 8, "KU": 10, "LLT": 28,
+           "MBA": 22, "MOB": 57, "RMB": 9, "SBB": 4, "UCM": 12, "UNI": 14, "VBC": 13}
+_ACB_URL = {}
+
+
+def _plantel_acb(i):
+    """Planteles de la Liga Endesa: acb.com/es/liga/equipos/{nombre}-{id}/plantilla (el nombre cambia con el patrocinador; se lee del menú)."""
+    if i not in ACB_IDS:
+        raise RuntimeError("equipo sin id de acb.com")
+    if not _ACB_URL:
+        h = get("https://acb.com/es/liga/equipos/real-madrid-9")
+        for m in re.finditer(r'/es/liga/equipos/[a-z0-9-]+-(\d+)(?=["/?])', h):
+            _ACB_URL.setdefault(m.group(1), m.group(0))
+    base = _ACB_URL.get(str(ACB_IDS[i]))
+    if not base:
+        raise RuntimeError("sin página de equipo")
+    h = get(f"https://acb.com{base}/plantilla")
+    pos = {"base": "B", "escolta": "E", "alero": "A", "ala-pívot": "AP", "pívot": "P"}
+    js, vistos = [], set()
+    for c in h.split('data-testid="player-card-link"')[1:]:
+        c = c.split("</a>")[0]
+        m = re.search(r'alt="Logo equipo de ([^"]+)"', c)
+        if not m:
+            continue
+        n = html.unescape(m.group(1)).strip()
+        txt = html.unescape(re.sub(r"<!--.*?-->|<[^>]+>", " ", c))
+        num = re.search(r"#\s*(\d+)", txt)
+        p = re.search(r"(Ala-pívot|Pívot|Escolta|Alero|Base)", txt)
+        if n and n not in vistos:
+            vistos.add(n)
+            js.append([n, num.group(1) if num else "", pos.get(p.group(1).lower(), "") if p else ""])
+    return js
+
+
 # liga -> función que devuelve el plantel de un equipo. Para sumar otra liga alcanza con agregarla acá.
-PLANTELES = {"nba": _plantel_nba, "el": _plantel_el}
+PLANTELES = {"nba": _plantel_nba, "el": _plantel_el, "lnb": _plantel_adc("lnb"), "la": _plantel_adc("la"),
+             "lfb": _plantel_adc("lfb"), "ldd": _plantel_adc("ldd"), "acb": _plantel_acb}
 
 
 def planteles(estado):
     """Planteles para el buscador de jugadores -> data/jugadores.json
     Formato: {"dia": "AAAA-MM-DD", "<liga>": {"<idEquipo>": [[nombre, número, posición], ...]}}
-    NBA (API pública de ESPN) y Euroliga (API oficial). Corre una vez por día; si un equipo falla, conserva el plantel anterior."""
+    NBA (ESPN), Euroliga (API oficial), Liga Nacional, Liga Argentina, Liga Femenina y Liga de Desarrollo (AdC) y Liga Endesa (acb.com). Corre una vez por día; si un equipo falla, conserva el plantel anterior."""
     viejo = leer("jugadores.json", {}) or {}
     cuenta = lambda d: {l: sum(len(v) for v in (d.get(l) or {}).values()) for l in PLANTELES if d.get(l)}
     if viejo.get("dia") == HOY.isoformat() and all(viejo.get(l) for l in PLANTELES):
