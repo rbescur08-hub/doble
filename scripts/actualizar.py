@@ -560,39 +560,90 @@ def escudos(estado):
 
 
 # ---------------------------------------------------------------- planteles
+def _plantel_nba(i):
+    r = get_json(f"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/{i.lower()}/roster", intentos=2)
+    js = []
+    for a in r.get("athletes") or []:
+        n = (a.get("displayName") or a.get("fullName") or "").strip()
+        if n:
+            js.append([n, str(a.get("jersey") or ""), ((a.get("position") or {}).get("abbreviation") or "")])
+    return js
+
+
+def _nombre_el(n):
+    """'CAMPAZZO, FACUNDO' -> 'Facundo Campazzo' (la Euroliga los publica apellido, nombre en mayúsculas)."""
+    n = re.sub(r"\s+", " ", n or "").strip()
+    if "," in n:
+        ap, nom = [x.strip() for x in n.split(",", 1)]
+        n = f"{nom} {ap}".strip()
+    return n.title() if n.isupper() else n
+
+
+def _plantel_el(i):
+    r = get_json(f"https://api-live.euroleague.net/v2/competitions/E/seasons/E2026/clubs/{i}/people", intentos=2)
+    items = r if isinstance(r, list) else (r.get("data") or r.get("items") or r.get("people") or [])
+    pos = {"guard": "G", "forward": "F", "center": "C"}
+    js, vistos = [], set()
+    for it in items:
+        if not isinstance(it, dict):
+            continue
+        tipo = str(it.get("type") or "").upper()
+        tnom = str(it.get("typeName") or "").lower()
+        if (tipo or tnom) and not (tipo == "J" or "player" in tnom):
+            continue  # entrenadores y cuerpo técnico
+        if it.get("active") is False:
+            continue
+        per = it.get("person") if isinstance(it.get("person"), dict) else it
+        n = _nombre_el(per.get("name") or per.get("passportName") or "")
+        if not n or n in vistos:
+            continue
+        vistos.add(n)
+        js.append([n, str(it.get("dorsal") or it.get("dorsalRaw") or "").strip(), pos.get(str(it.get("positionName") or "").lower(), "")])
+    if not js and items and isinstance(items[0], dict):
+        raise RuntimeError("formato desconocido: " + ",".join(sorted(items[0]))[:60])
+    return sorted(js)
+
+
+# liga -> función que devuelve el plantel de un equipo. Para sumar otra liga alcanza con agregarla acá.
+PLANTELES = {"nba": _plantel_nba, "el": _plantel_el}
+
+
 def planteles(estado):
     """Planteles para el buscador de jugadores -> data/jugadores.json
     Formato: {"dia": "AAAA-MM-DD", "<liga>": {"<idEquipo>": [[nombre, número, posición], ...]}}
-    Hoy solo la NBA (API pública de ESPN). Corre una vez por día; si un equipo falla, conserva el plantel anterior."""
+    NBA (API pública de ESPN) y Euroliga (API oficial). Corre una vez por día; si un equipo falla, conserva el plantel anterior."""
     viejo = leer("jugadores.json", {}) or {}
-    if viejo.get("dia") == HOY.isoformat() and viejo.get("nba"):
-        estado["planteles"] = {"ok": True, "saltado": "ya se actualizó hoy", "jugadores": sum(len(v) for v in viejo["nba"].values())}
+    cuenta = lambda d: {l: sum(len(v) for v in (d.get(l) or {}).values()) for l in PLANTELES if d.get(l)}
+    if viejo.get("dia") == HOY.isoformat() and all(viejo.get(l) for l in PLANTELES):
+        estado["planteles"] = {"ok": True, "saltado": "ya se actualizó hoy", "jugadores": sum(cuenta(viejo).values())}
         return
-    doc = leer("nba.json") or (leer("ligas.json", {}) or {}).get("nba") or {}
-    ids = [i for i in (doc.get("equipos") or {}) if i != "TBD"]
-    nba_p, fallas = dict(viejo.get("nba") or {}), []
-    for i in ids:
-        try:
-            r = get_json(f"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/{i.lower()}/roster", intentos=2)
-            js = []
-            for a in r.get("athletes") or []:
-                n = (a.get("displayName") or a.get("fullName") or "").strip()
-                if n:
-                    js.append([n, str(a.get("jersey") or ""), ((a.get("position") or {}).get("abbreviation") or "")])
-            if js:
-                nba_p[i] = js
-            else:
-                fallas.append(f"{i}: sin jugadores")
-        except Exception as e:
-            fallas.append(f"{i}: {e}"[:80])
-    if not nba_p:
+    ligas = leer("ligas.json", {}) or {}
+    nuevo, fallas, pedidos = dict(viejo), [], 0
+    for liga, fn in PLANTELES.items():
+        if viejo.get("dia") == HOY.isoformat() and viejo.get(liga):
+            continue  # esta liga ya se actualizó hoy
+        doc = (leer("nba.json") if liga == "nba" else None) or ligas.get(liga) or {}
+        ids = [i for i in (doc.get("equipos") or {}) if i != "TBD"]
+        pl = dict(viejo.get(liga) or {})
+        for i in ids:
+            pedidos += 1
+            try:
+                js = fn(i)
+                if js:
+                    pl[i] = js
+                else:
+                    fallas.append(f"{liga} {i}: sin jugadores")
+            except Exception as e:
+                fallas.append(f"{liga} {i}: {e}"[:90])
+        pl = {k: pl[k] for k in sorted(pl) if k in ids}
+        if pl:
+            nuevo[liga] = pl
+    if not any(nuevo.get(l) for l in PLANTELES):
         raise RuntimeError("no se pudo leer ningún plantel: " + "; ".join(fallas[:3]))
-    nuevo = dict(viejo)
-    nuevo["nba"] = {k: nba_p[k] for k in sorted(nba_p) if k in ids}
-    if len(fallas) < len(ids) / 2:  # si falló la mitad, se reintenta en la próxima corrida
+    if len(fallas) < max(1, pedidos) / 2:  # si falló la mitad, se reintenta en la próxima corrida
         nuevo["dia"] = HOY.isoformat()
     guardar("jugadores.json", nuevo)
-    estado["planteles"] = {"ok": True, "jugadores": sum(len(v) for v in nuevo["nba"].values()), "fallas": fallas[:10]}
+    estado["planteles"] = {"ok": True, "jugadores": sum(cuenta(nuevo).values()), "por_liga": cuenta(nuevo), "fallas": fallas[:10]}
 
 
 # ---------------------------------------------------------------- main

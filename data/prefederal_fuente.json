@@ -1,169 +1,862 @@
 {
-  "_leeme": "Fuente legible del Pre Federal. La edita la tarea diaria de Claude; scripts/prefederal.py la valida y arma data/prefederal.json, que es lo que lee la página. Partido: [fecha AAAA-MM-DD, hora HH:MM o \"\", idLocal, idVisitante, ptsLocal o null, ptsVisitante o null, fase, sede]. Fila de tabla: [id, PJ, PG, PP, PF, PC, Pts] o [id, PG, PP] si la fuente solo da ganados y perdidos. Solo se cargan datos confirmados por una fuente; lo que no se sabe queda vacío.",
-  "actualizado": "2026-11-15T03:30:00-03:00",
-  "torneos": [
+ "_leeme": "Fuente legible del Pre Federal. La edita la tarea diaria de Claude; scripts/prefederal.py la valida y arma data/prefederal.json, que es lo que lee la página. Partido: [fecha AAAA-MM-DD, hora HH:MM o \"\", idLocal, idVisitante, ptsLocal o null, ptsVisitante o null, fase, sede]. Fila de tabla: [id, PJ, PG, PP, PF, PC, Pts] o [id, PG, PP] si la fuente solo da ganados y perdidos. Solo se cargan datos confirmados por una fuente; lo que no se sabe queda vacío.",
+ "actualizado": "2026-11-16T10:30:00-03:00",
+ "torneos": [
+  {
+   "id": "nqn",
+   "provincia": "Neuquén y Alto Valle",
+   "organiza": "Federación Neuquina y Asociación del Alto Valle",
+   "temporada": "2026",
+   "etapa": "Cuartos de final",
+   "plazas": "Los cuatro ganadores de cuartos se clasifican a la Liga Federal 2027; los perdedores juegan dos llaves por otros dos lugares.",
+   "formato": "Zona Campeonato con ocho equipos: fase regular de 16 fechas y playoffs. Posiciones finales de la fase regular: 1.º Pérfora, 2.º Deportivo Roca, 3.º Centro Español, 4.º Pacífico, 5.º Atlético Regina, 6.º Club Plottier, 7.º Independiente, 8.º Petrolero Argentino.",
+   "playoffs": "Cuartos de final al mejor de tres (15, 18 y 22 de noviembre). La serie final está prevista para el 12, 14 y 17 o 18 de diciembre.",
+   "tv": "",
+   "fuente": "https://www.cutralcoalinstante.com/2026/11/13/quedaron-definidos-los-cruces-de-cuartos-de-final-del-torneo-prefederal-de-basquetbol/",
+   "fuenteNombre": "Cutral Co al Instante, LM Neuquén y Río Negro",
+   "equipos": {
+    "PER": [
+     "Pérfora",
+     "Plaza Huincul"
+    ],
+    "ROC": [
+     "Deportivo Roca",
+     "General Roca"
+    ],
+    "CES": [
+     "Centro Español",
+     "Plottier"
+    ],
+    "PAC": [
+     "Pacífico",
+     "Neuquén"
+    ],
+    "REG": [
+     "Atlético Regina",
+     "Villa Regina"
+    ],
+    "PLO": [
+     "Club Plottier",
+     "Plottier"
+    ],
+    "IND": [
+     "Independiente",
+     "Neuquén"
+    ],
+    "PET": [
+     "Petrolero Argentino",
+     "Plaza Huincul"
+    ]
+   },
+   "partidos": [
+    [
+     "2026-11-11",
+     "",
+     "PER",
+     "PET",
+     79,
+     76,
+     "Fase regular · Fecha 16",
+     "Plaza Huincul"
+    ],
+    [
+     "2026-11-15",
+     "",
+     "PER",
+     "PET",
+     null,
+     null,
+     "Cuartos de final · Juego 1",
+     "Estadio Oscar Piti Claris, Plaza Huincul"
+    ],
+    [
+     "2026-11-15",
+     "21:00",
+     "ROC",
+     "IND",
+     null,
+     null,
+     "Cuartos de final · Juego 1",
+     "Polideportivo Gimena Padín, General Roca"
+    ],
+    [
+     "2026-11-15",
+     "",
+     "CES",
+     "PLO",
+     null,
+     null,
+     "Cuartos de final · Juego 1",
+     "El Templo, Plottier"
+    ],
+    [
+     "2026-11-15",
+     "",
+     "PAC",
+     "REG",
+     null,
+     null,
+     "Cuartos de final · Juego 1",
+     "Viejo Ramírez, Neuquén"
+    ],
+    [
+     "2026-11-18",
+     "",
+     "PET",
+     "PER",
+     null,
+     null,
+     "Cuartos de final · Juego 2",
+     ""
+    ],
+    [
+     "2026-11-18",
+     "",
+     "IND",
+     "ROC",
+     null,
+     null,
+     "Cuartos de final · Juego 2",
+     ""
+    ],
+    [
+     "2026-11-18",
+     "",
+     "PLO",
+     "CES",
+     null,
+     null,
+     "Cuartos de final · Juego 2",
+     ""
+    ],
+    [
+     "2026-11-18",
+     "",
+     "REG",
+     "PAC",
+     null,
+     null,
+     "Cuartos de final · Juego 2",
+     ""
+    ]
+   ],
+   "tablas": []
+  },
+  {
+   "id": "cha",
+   "provincia": "Chaco",
+   "organiza": "Federación Chaqueña de Básquetbol",
+   "temporada": "2026",
+   "etapa": "Semifinales",
+   "plazas": "Los cuatro semifinalistas ya tienen plaza en la Liga Federal 2027: Hércules, Asociación Italiana, Don Bosco y Unión Progresista.",
+   "formato": "Diez equipos en dos zonas de cinco, ida y vuelta, del 14 de agosto al 16 de octubre. Después play-in, cuartos, semifinales y final.",
+   "playoffs": "Semifinales al mejor de tres (13, 20 y 22 de noviembre). Final al mejor de tres: 27 de noviembre, 4 y 11 de diciembre.",
+   "tv": "",
+   "fuente": "https://www.sportchaco.com.ar/?p=47286",
+   "fuenteNombre": "Sport Chaco y Quinto Cuarto NEA",
+   "equipos": {
+    "HER": [
+     "Hércules",
+     "Charata"
+    ],
+    "ITA": [
+     "Asociación Italiana",
+     "Charata"
+    ],
+    "DBO": [
+     "Don Bosco",
+     "Resistencia"
+    ],
+    "PRO": [
+     "Unión Progresista",
+     "Villa Ángela"
+    ],
+    "ESP": [
+     "Española",
+     "Charata"
+    ],
+    "HIN": [
+     "Hindú Club",
+     "Resistencia"
+    ],
+    "SOC": [
+     "Social",
+     "Las Breñas"
+    ],
+    "COO": [
+     "Cooperativa",
+     "Charata"
+    ],
+    "ACC": [
+     "Acción",
+     "Presidencia Roque Sáenz Peña"
+    ],
+    "URQ": [
+     "Urquiza",
+     "La Leonesa"
+    ]
+   },
+   "partidos": [
+    [
+     "2026-11-13",
+     "",
+     "HER",
+     "PRO",
+     78,
+     71,
+     "Semifinal · Juego 1",
+     "Charata"
+    ],
+    [
+     "2026-11-13",
+     "",
+     "DBO",
+     "ITA",
+     75,
+     79,
+     "Semifinal · Juego 1",
+     "Resistencia"
+    ],
+    [
+     "2026-11-20",
+     "",
+     "PRO",
+     "HER",
+     null,
+     null,
+     "Semifinal · Juego 2",
+     "Villa Ángela"
+    ],
+    [
+     "2026-11-20",
+     "",
+     "ITA",
+     "DBO",
+     null,
+     null,
+     "Semifinal · Juego 2",
+     "Charata"
+    ]
+   ],
+   "tablas": []
+  },
+  {
+   "id": "lpa",
+   "provincia": "La Pampa",
+   "organiza": "",
+   "temporada": "2026",
+   "etapa": "Final",
+   "plazas": "",
+   "formato": "Semifinales al mejor de tres: All Boys le ganó 2-0 a Pico FBC (98-47 y 77-61) y Sportivo Independiente 2-0 a Ferro (71-70 y 108-87).",
+   "playoffs": "Final al mejor de tres entre All Boys de Santa Rosa y Sportivo Independiente de General Pico: 20 y 22 de noviembre, y el 27 si hace falta un tercer partido.",
+   "tv": "",
+   "fuente": "https://www.laarena.com.ar/deportes/basquet-los-finalistas-del-pre-federal-202611100120",
+   "fuenteNombre": "La Arena",
+   "equipos": {
+    "ALL": [
+     "All Boys",
+     "Santa Rosa"
+    ],
+    "IND": [
+     "Sportivo Independiente",
+     "General Pico"
+    ],
+    "FER": [
+     "Ferro",
+     "General Pico"
+    ],
+    "PIC": [
+     "Pico FBC",
+     "General Pico"
+    ]
+   },
+   "partidos": [
+    [
+     "2026-11-20",
+     "",
+     "ALL",
+     "IND",
+     null,
+     null,
+     "Final · Juego 1",
+     "Estadio José Aquiles Regazzoli, Santa Rosa"
+    ],
+    [
+     "2026-11-22",
+     "",
+     "IND",
+     "ALL",
+     null,
+     null,
+     "Final · Juego 2",
+     "Gigante de la Avenida, General Pico"
+    ]
+   ],
+   "tablas": []
+  },
+  {
+   "id": "mis",
+   "provincia": "Misiones",
+   "organiza": "Federación Misionera de Básquetbol",
+   "temporada": "2026",
+   "etapa": "Semifinales",
+   "plazas": "Los dos finalistas se clasifican a la Liga Federal 2027.",
+   "formato": "Seis equipos, todos contra todos a dos ruedas. Tokio y CAPRI pasaron directo a semifinales; Mitre y OTC ganaron la reclasificación ante El Coatí y Luz y Fuerza.",
+   "playoffs": "Semifinales al mejor de tres: Tokio vs. OTC y CAPRI vs. Mitre, el 20, 27 y 29 de noviembre (el orden de las localías todavía no está publicado). Final al mejor de cinco entre el 4 y el 20 de diciembre.",
+   "tv": "",
+   "fuente": "https://www.primeraedicion.com.ar/nota/101158214/pre-federal-comienza-la-reclasificacion-con-dos-cruces/",
+   "fuenteNombre": "Primera Edición y Misiones Online",
+   "equipos": {
+    "TOK": [
+     "Tokio",
+     "Posadas"
+    ],
+    "CAP": [
+     "CAPRI",
+     "Posadas"
+    ],
+    "MIT": [
+     "Bartolomé Mitre",
+     "Posadas"
+    ],
+    "OTC": [
+     "Oberá Tenis Club",
+     "Oberá"
+    ],
+    "LYF": [
+     "Luz y Fuerza",
+     "Posadas"
+    ],
+    "COA": [
+     "El Coatí",
+     "Eldorado"
+    ]
+   },
+   "partidos": [
+    [
+     "2026-11-06",
+     "21:30",
+     "OTC",
+     "LYF",
+     81,
+     67,
+     "Reclasificación · Juego 1",
+     "Oberá"
+    ],
+    [
+     "2026-11-13",
+     "21:30",
+     "LYF",
+     "OTC",
+     64,
+     68,
+     "Reclasificación · Juego 2",
+     "Colegio Inmaculada Concepción, Posadas"
+    ]
+   ],
+   "tablas": []
+  },
+  {
+   "id": "sde",
+   "provincia": "Santiago del Estero",
+   "organiza": "Federación Santiagueña de Básquet",
+   "temporada": "2026",
+   "etapa": "Fase regular",
+   "plazas": "",
+   "formato": "Torneo Prefederal de Mayores «Fabián Borro»: 14 equipos en dos zonas de siete. Empezó el 9 de octubre.",
+   "playoffs": "",
+   "tv": "",
+   "fuente": "https://www.diariopanorama.com/noticia/570482/arranca-quinta-fecha-torneo-prefederal-basquet-partidos-resultados-tabla-posiciones",
+   "fuenteNombre": "Diario Panorama",
+   "tablaNota": "Posiciones al 22 de octubre, después de cuatro fechas",
+   "equipos": {
+    "HUR": [
+     "Huracán",
+     ""
+    ],
+    "NEW": [
+     "Jorge Newbery",
+     ""
+    ],
+    "OLI": [
+     "Olímpico",
+     "La Banda"
+    ],
+    "JUV": [
+     "Juventud",
+     ""
+    ],
+    "TIR": [
+     "Tiro Federal",
+     "La Banda"
+    ],
+    "COL": [
+     "Sportivo Colón",
+     ""
+    ],
+    "RED": [
+     "Red Star",
+     ""
+    ],
+    "MIT": [
+     "Mitre",
+     ""
+    ],
+    "BEL": [
+     "Belgrano",
+     ""
+    ],
+    "NIC": [
+     "Nicolás Avellaneda",
+     ""
+    ],
+    "NOR": [
+     "Normal Banda",
+     "La Banda"
+    ],
+    "QUI": [
+     "Quimsa",
+     ""
+    ],
+    "IBB": [
+     "Independiente BBC",
+     ""
+    ],
+    "FER": [
+     "Fernández BBC",
+     "Fernández"
+    ]
+   },
+   "partidos": [],
+   "tablas": [
     {
-      "id": "nqn",
-      "provincia": "Neuquén y Alto Valle",
-      "organiza": "Federación Neuquina y Asociación del Alto Valle",
-      "temporada": "2026",
-      "etapa": "Cuartos de final",
-      "plazas": "Los cuatro ganadores de cuartos se clasifican a la Liga Federal 2027; los perdedores juegan dos llaves por otros dos lugares.",
-      "formato": "Zona Campeonato con ocho equipos: fase regular de 16 fechas y playoffs. Posiciones finales de la fase regular: 1.º Pérfora, 2.º Deportivo Roca, 3.º Centro Español, 4.º Pacífico, 5.º Atlético Regina, 6.º Club Plottier, 7.º Independiente, 8.º Petrolero Argentino.",
-      "playoffs": "Cuartos de final al mejor de tres (15, 18 y 22 de noviembre). La serie final está prevista para el 12, 14 y 17 o 18 de diciembre.",
-      "tv": "",
-      "fuente": "https://www.cutralcoalinstante.com/2026/11/13/quedaron-definidos-los-cruces-de-cuartos-de-final-del-torneo-prefederal-de-basquetbol/",
-      "fuenteNombre": "Cutral Co al Instante, LM Neuquén y Río Negro",
-      "equipos": {
-        "PER": ["Pérfora", "Plaza Huincul"],
-        "ROC": ["Deportivo Roca", "General Roca"],
-        "CES": ["Centro Español", "Plottier"],
-        "PAC": ["Pacífico", "Neuquén"],
-        "REG": ["Atlético Regina", "Villa Regina"],
-        "PLO": ["Club Plottier", "Plottier"],
-        "IND": ["Independiente", "Neuquén"],
-        "PET": ["Petrolero Argentino", "Plaza Huincul"]
-      },
-      "partidos": [
-        ["2026-11-11", "", "PER", "PET", 79, 76, "Fase regular · Fecha 16", "Plaza Huincul"],
-        ["2026-11-15", "", "PER", "PET", null, null, "Cuartos de final · Juego 1", "Estadio Oscar Piti Claris, Plaza Huincul"],
-        ["2026-11-15", "21:00", "ROC", "IND", null, null, "Cuartos de final · Juego 1", "Polideportivo Gimena Padín, General Roca"],
-        ["2026-11-15", "", "CES", "PLO", null, null, "Cuartos de final · Juego 1", "El Templo, Plottier"],
-        ["2026-11-15", "", "PAC", "REG", null, null, "Cuartos de final · Juego 1", "Viejo Ramírez, Neuquén"],
-        ["2026-11-18", "", "PET", "PER", null, null, "Cuartos de final · Juego 2", ""],
-        ["2026-11-18", "", "IND", "ROC", null, null, "Cuartos de final · Juego 2", ""],
-        ["2026-11-18", "", "PLO", "CES", null, null, "Cuartos de final · Juego 2", ""],
-        ["2026-11-18", "", "REG", "PAC", null, null, "Cuartos de final · Juego 2", ""]
+     "grupo": "Zona A",
+     "filas": [
+      [
+       "HUR",
+       2,
+       1
       ],
-      "tablas": []
-    },
-    {
-      "id": "cha",
-      "provincia": "Chaco",
-      "organiza": "Federación Chaqueña de Básquetbol",
-      "temporada": "2026",
-      "etapa": "Semifinales",
-      "plazas": "Los cuatro semifinalistas ya tienen plaza en la Liga Federal 2027: Hércules, Asociación Italiana, Don Bosco y Unión Progresista.",
-      "formato": "Diez equipos en dos zonas de cinco, ida y vuelta, del 14 de agosto al 16 de octubre. Después play-in, cuartos, semifinales y final.",
-      "playoffs": "Semifinales al mejor de tres (13, 20 y 22 de noviembre). Final al mejor de tres: 27 de noviembre, 4 y 11 de diciembre.",
-      "tv": "",
-      "fuente": "https://www.sportchaco.com.ar/?p=47286",
-      "fuenteNombre": "Sport Chaco y Quinto Cuarto NEA",
-      "equipos": {
-        "HER": ["Hércules", "Charata"],
-        "ITA": ["Asociación Italiana", "Charata"],
-        "DBO": ["Don Bosco", "Resistencia"],
-        "PRO": ["Unión Progresista", "Villa Ángela"],
-        "ESP": ["Española", "Charata"],
-        "HIN": ["Hindú Club", "Resistencia"],
-        "SOC": ["Social", "Las Breñas"],
-        "COO": ["Cooperativa", "Charata"],
-        "ACC": ["Acción", "Presidencia Roque Sáenz Peña"],
-        "URQ": ["Urquiza", "La Leonesa"]
-      },
-      "partidos": [
-        ["2026-11-13", "", "HER", "PRO", 78, 71, "Semifinal · Juego 1", "Charata"],
-        ["2026-11-13", "", "DBO", "ITA", 75, 79, "Semifinal · Juego 1", "Resistencia"],
-        ["2026-11-20", "", "PRO", "HER", null, null, "Semifinal · Juego 2", "Villa Ángela"],
-        ["2026-11-20", "", "ITA", "DBO", null, null, "Semifinal · Juego 2", "Charata"]
+      [
+       "NEW",
+       2,
+       1
       ],
-      "tablas": []
-    },
-    {
-      "id": "lpa",
-      "provincia": "La Pampa",
-      "organiza": "",
-      "temporada": "2026",
-      "etapa": "Final",
-      "plazas": "",
-      "formato": "Semifinales al mejor de tres: All Boys le ganó 2-0 a Pico FBC (98-47 y 77-61) y Sportivo Independiente 2-0 a Ferro (71-70 y 108-87).",
-      "playoffs": "Final al mejor de tres entre All Boys de Santa Rosa y Sportivo Independiente de General Pico: 20 y 22 de noviembre, y el 27 si hace falta un tercer partido.",
-      "tv": "",
-      "fuente": "https://www.laarena.com.ar/deportes/basquet-los-finalistas-del-pre-federal-202611100120",
-      "fuenteNombre": "La Arena",
-      "equipos": {
-        "ALL": ["All Boys", "Santa Rosa"],
-        "IND": ["Sportivo Independiente", "General Pico"],
-        "FER": ["Ferro", "General Pico"],
-        "PIC": ["Pico FBC", "General Pico"]
-      },
-      "partidos": [
-        ["2026-11-20", "", "ALL", "IND", null, null, "Final · Juego 1", "Estadio José Aquiles Regazzoli, Santa Rosa"],
-        ["2026-11-22", "", "IND", "ALL", null, null, "Final · Juego 2", "Gigante de la Avenida, General Pico"]
+      [
+       "OLI",
+       2,
+       1
       ],
-      "tablas": []
-    },
-    {
-      "id": "mis",
-      "provincia": "Misiones",
-      "organiza": "Federación Misionera de Básquetbol",
-      "temporada": "2026",
-      "etapa": "Semifinales",
-      "plazas": "Los dos finalistas se clasifican a la Liga Federal 2027.",
-      "formato": "Seis equipos, todos contra todos a dos ruedas. Tokio y CAPRI pasaron directo a semifinales; Mitre y OTC ganaron la reclasificación ante El Coatí y Luz y Fuerza.",
-      "playoffs": "Semifinales al mejor de tres: Tokio vs. OTC y CAPRI vs. Mitre, el 20, 27 y 29 de noviembre (el orden de las localías todavía no está publicado). Final al mejor de cinco entre el 4 y el 20 de diciembre.",
-      "tv": "",
-      "fuente": "https://www.primeraedicion.com.ar/nota/101158214/pre-federal-comienza-la-reclasificacion-con-dos-cruces/",
-      "fuenteNombre": "Primera Edición y Misiones Online",
-      "equipos": {
-        "TOK": ["Tokio", "Posadas"],
-        "CAP": ["CAPRI", "Posadas"],
-        "MIT": ["Bartolomé Mitre", "Posadas"],
-        "OTC": ["Oberá Tenis Club", "Oberá"],
-        "LYF": ["Luz y Fuerza", "Posadas"],
-        "COA": ["El Coatí", "Eldorado"]
-      },
-      "partidos": [
-        ["2026-11-06", "21:30", "OTC", "LYF", 81, 67, "Reclasificación · Juego 1", "Oberá"],
-        ["2026-11-13", "21:30", "LYF", "OTC", 64, 68, "Reclasificación · Juego 2", "Colegio Inmaculada Concepción, Posadas"]
+      [
+       "JUV",
+       2,
+       2
       ],
-      "tablas": []
-    },
-    {
-      "id": "sde",
-      "provincia": "Santiago del Estero",
-      "organiza": "Federación Santiagueña de Básquet",
-      "temporada": "2026",
-      "etapa": "Fase regular",
-      "plazas": "",
-      "formato": "Torneo Prefederal de Mayores «Fabián Borro»: 14 equipos en dos zonas de siete. Empezó el 9 de octubre.",
-      "playoffs": "",
-      "tv": "",
-      "fuente": "https://www.diariopanorama.com/noticia/570482/arranca-quinta-fecha-torneo-prefederal-basquet-partidos-resultados-tabla-posiciones",
-      "fuenteNombre": "Diario Panorama",
-      "tablaNota": "Posiciones al 22 de octubre, después de cuatro fechas",
-      "equipos": {
-        "HUR": ["Huracán", ""], "NEW": ["Jorge Newbery", ""], "OLI": ["Olímpico", "La Banda"], "JUV": ["Juventud", ""],
-        "TIR": ["Tiro Federal", "La Banda"], "COL": ["Sportivo Colón", ""], "RED": ["Red Star", ""],
-        "MIT": ["Mitre", ""], "BEL": ["Belgrano", ""], "NIC": ["Nicolás Avellaneda", ""], "NOR": ["Normal Banda", "La Banda"],
-        "QUI": ["Quimsa", ""], "IBB": ["Independiente BBC", ""], "FER": ["Fernández BBC", "Fernández"]
-      },
-      "partidos": [],
-      "tablas": [
-        {"grupo": "Zona A", "filas": [["HUR", 2, 1], ["NEW", 2, 1], ["OLI", 2, 1], ["JUV", 2, 2], ["TIR", 1, 2], ["COL", 1, 2], ["RED", 1, 2]]},
-        {"grupo": "Zona B", "filas": [["MIT", 3, 0], ["BEL", 3, 1], ["NIC", 1, 1], ["NOR", 1, 2], ["QUI", 1, 2], ["IBB", 1, 2], ["FER", 0, 2]]}
+      [
+       "TIR",
+       1,
+       2
+      ],
+      [
+       "COL",
+       1,
+       2
+      ],
+      [
+       "RED",
+       1,
+       2
       ]
+     ]
+    },
+    {
+     "grupo": "Zona B",
+     "filas": [
+      [
+       "MIT",
+       3,
+       0
+      ],
+      [
+       "BEL",
+       3,
+       1
+      ],
+      [
+       "NIC",
+       1,
+       1
+      ],
+      [
+       "NOR",
+       1,
+       2
+      ],
+      [
+       "QUI",
+       1,
+       2
+      ],
+      [
+       "IBB",
+       1,
+       2
+      ],
+      [
+       "FER",
+       0,
+       2
+      ]
+     ]
     }
-  ],
-  "pendientes": [
-    {"provincia": "Buenos Aires", "nota": "Prefederal bonaerense: se está cerrando la fase regular por zonas y vienen los playoffs por el título."},
-    {"provincia": "FeBAMBA (CABA y Gran Buenos Aires)", "nota": "Prefederal con 48 equipos en cuatro zonas de 12."},
-    {"provincia": "Santa Fe", "nota": "Lo juega cada asociación (Santafesina, Rosarina, Venadense y otras)."},
-    {"provincia": "Córdoba", "nota": "Las plazas salen de la Liga Cordobesa."},
-    {"provincia": "Chubut", "nota": "Etapa asociativa de Comodoro Rivadavia: final entre Gimnasia y La Fede Deportiva."},
-    {"provincia": "Catamarca", "nota": ""},
-    {"provincia": "Entre Ríos", "nota": ""},
-    {"provincia": "Corrientes", "nota": ""},
-    {"provincia": "Formosa", "nota": ""},
-    {"provincia": "Tucumán", "nota": ""},
-    {"provincia": "Salta", "nota": ""},
-    {"provincia": "Jujuy", "nota": ""},
-    {"provincia": "La Rioja", "nota": ""},
-    {"provincia": "Mendoza", "nota": ""},
-    {"provincia": "San Juan", "nota": ""},
-    {"provincia": "San Luis", "nota": ""},
-    {"provincia": "Río Negro (resto de la provincia)", "nota": ""},
-    {"provincia": "Santa Cruz", "nota": ""},
-    {"provincia": "Tierra del Fuego", "nota": ""}
-  ]
+   ]
+  },
+  {
+   "id": "chu",
+   "provincia": "Chubut (Este)",
+   "organiza": "Asociación de Básquet del Este del Chubut (ABECh)",
+   "temporada": "2026",
+   "etapa": "Final",
+   "plazas": "",
+   "formato": "El Torneo Clausura de la ABECh es la etapa asociativa del Pre Federal 2026. Seis equipos, ida y vuelta (10 fechas). Los dos primeros pasaron directo a semifinales; en el repechaje Racing eliminó 2-0 a Germinal y Huracán 2-1 a Ferrocarril Patagónico.",
+   "playoffs": "Semifinales al mejor de tres: Guillermo Brown le ganó 2-1 a Huracán (71-75, triunfo en Trelew en el segundo juego y 70-68) y Deportivo Madryn 2-1 a Racing (93-66, 56-64 y 79-70). La final es el clásico de Puerto Madryn entre Brown y Madryn; las fechas todavía no están publicadas.",
+   "tv": "",
+   "fuente": "http://diariojornada.com.ar/427158/deportes/brown_y_madryn_ganaron_y_definiran_el_titulo",
+   "fuenteNombre": "Diario Jornada",
+   "tablaNota": "Posiciones finales de la fase regular",
+   "equipos": {
+    "BRO": [
+     "Guillermo Brown",
+     "Puerto Madryn"
+    ],
+    "MAD": [
+     "Deportivo Madryn",
+     "Puerto Madryn"
+    ],
+    "RAC": [
+     "Racing Club",
+     "Trelew"
+    ],
+    "HUR": [
+     "Huracán",
+     "Trelew"
+    ],
+    "FER": [
+     "Ferrocarril Patagónico",
+     "Puerto Madryn"
+    ],
+    "GER": [
+     "Germinal",
+     "Rawson"
+    ]
+   },
+   "partidos": [
+    [
+     "2026-10-30",
+     "",
+     "HUR",
+     "BRO",
+     83,
+     101,
+     "Fase regular · Fecha 10",
+     "Trelew"
+    ],
+    [
+     "2026-11-02",
+     "",
+     "RAC",
+     "MAD",
+     81,
+     93,
+     "Fase regular · Fecha 10",
+     "Gimnasio Juan Andrés Fernández, Trelew"
+    ],
+    [
+     "2026-11-10",
+     "21:00",
+     "BRO",
+     "HUR",
+     71,
+     75,
+     "Semifinal · Juego 1",
+     "Gimnasio Benito García, Puerto Madryn"
+    ],
+    [
+     "2026-11-10",
+     "21:00",
+     "MAD",
+     "RAC",
+     93,
+     66,
+     "Semifinal · Juego 1",
+     "Gimnasio Luján Barrientos, Puerto Madryn"
+    ],
+    [
+     "2026-11-13",
+     "21:30",
+     "RAC",
+     "MAD",
+     64,
+     56,
+     "Semifinal · Juego 2",
+     "Trelew"
+    ],
+    [
+     "2026-11-15",
+     "",
+     "BRO",
+     "HUR",
+     70,
+     68,
+     "Semifinal · Juego 3",
+     "Gimnasio Benito García, Puerto Madryn"
+    ],
+    [
+     "2026-11-15",
+     "",
+     "MAD",
+     "RAC",
+     79,
+     70,
+     "Semifinal · Juego 3",
+     "Gimnasio Luján Barrientos, Puerto Madryn"
+    ]
+   ],
+   "tablas": [
+    {
+     "grupo": "Fase regular",
+     "filas": [
+      [
+       "BRO",
+       9,
+       1
+      ],
+      [
+       "MAD",
+       8,
+       2
+      ],
+      [
+       "RAC",
+       6,
+       4
+      ],
+      [
+       "HUR",
+       4,
+       6
+      ],
+      [
+       "FER",
+       3,
+       7
+      ],
+      [
+       "GER",
+       0,
+       10
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "er",
+   "provincia": "Entre Ríos",
+   "organiza": "Federación de Básquet de Entre Ríos (FBER)",
+   "temporada": "2026",
+   "etapa": "Octavos de final",
+   "plazas": "Los ocho ganadores de octavos se clasifican directo a la Liga Federal 2027. Ya tienen plaza Racing de Gualeguaychú y Peñarol de Rosario del Tala.",
+   "formato": "Liga Provincial de Mayores (Pre Federal): 27 clubes en conferencias, todos contra todos a dos ruedas; después play-in y playoffs desde octavos.",
+   "playoffs": "Octavos al mejor de tres (11, 13 y 15 de noviembre): Sportivo San Salvador vs. Luis Luciano, Sionista vs. Capuchinos, Regatas vs. Parque Sur, Atlético Tala vs. Independiente, Urquiza vs. Social Federación, La Armonía vs. Peñarol, Racing vs. Ciclista y Recreativo vs. Ferro de San Salvador. Racing (2-0 a Ciclista) y Peñarol barrieron sus series; Sionista y Capuchinos estaban 1-1 y definían el 15. Racing espera al ganador de esa llave en cuartos.",
+   "tv": "",
+   "fuente": "https://www.elheraldo.com.ar/noticias/deportes/capuchinos-el-unico-representante-de-concordia-que-sigue-en-carrera-en-la-liga-provincial-de-basquetbol",
+   "fuenteNombre": "El Heraldo y El Día",
+   "equipos": {
+    "SSS": [
+     "Sportivo San Salvador",
+     "San Salvador"
+    ],
+    "LUC": [
+     "Luis Luciano",
+     "Urdinarrain"
+    ],
+    "SIO": [
+     "Sionista",
+     "Paraná"
+    ],
+    "CAP": [
+     "Capuchinos",
+     "Concordia"
+    ],
+    "REG": [
+     "Regatas",
+     "Concepción del Uruguay"
+    ],
+    "PSU": [
+     "Parque Sur",
+     ""
+    ],
+    "TAL": [
+     "Atlético Tala",
+     "Rosario del Tala"
+    ],
+    "IND": [
+     "Independiente",
+     "La Paz"
+    ],
+    "URQ": [
+     "Urquiza",
+     "Santa Elena"
+    ],
+    "SOC": [
+     "Social Federación",
+     ""
+    ],
+    "ARM": [
+     "La Armonía",
+     ""
+    ],
+    "PEN": [
+     "Peñarol",
+     "Rosario del Tala"
+    ],
+    "RAC": [
+     "Racing",
+     "Gualeguaychú"
+    ],
+    "CIC": [
+     "Ciclista",
+     "Paraná"
+    ],
+    "REC": [
+     "Recreativo",
+     ""
+    ],
+    "FER": [
+     "Ferro",
+     "San Salvador"
+    ]
+   },
+   "partidos": [
+    [
+     "2026-11-13",
+     "",
+     "CIC",
+     "RAC",
+     61,
+     64,
+     "Octavos de final · Juego 2",
+     "Paraná"
+    ]
+   ],
+   "tablas": []
+  },
+  {
+   "id": "cba",
+   "provincia": "Córdoba",
+   "organiza": "Federación Cordobesa de Básquet",
+   "temporada": "2026",
+   "etapa": "Cuartos de final",
+   "plazas": "Las plazas para la Liga Federal 2027 salen de los playoffs de la Liga Provincial A.",
+   "formato": "Liga Cordobesa (Liga Provincial A de Clubes). Por ahora está cargada una sola de las series de cuartos de final.",
+   "playoffs": "Cuartos de final al mejor de tres. El Tala (San Francisco) vs. Sportivo 9 de Julio (Río Tercero): 9 de Julio ganó el primero 65-53; el segundo fue el 13 de noviembre en Río Tercero y, si hizo falta, el tercero el 15 en San Francisco.",
+   "tv": "",
+   "fuente": "https://www.lavozdesanjusto.com.ar/el-tala-cayo-ante-9-de-julio-en-el-inicio-de-los-playoffs-de-la-liga-cordobesa",
+   "fuenteNombre": "La Voz de San Justo",
+   "equipos": {
+    "TAL": [
+     "El Tala",
+     "San Francisco"
+    ],
+    "NDJ": [
+     "Sportivo 9 de Julio",
+     "Río Tercero"
+    ]
+   },
+   "partidos": [
+    [
+     "2026-11-06",
+     "21:30",
+     "TAL",
+     "NDJ",
+     53,
+     65,
+     "Cuartos de final · Juego 1",
+     "Estadio Luis Rafael Ferreyra, San Francisco"
+    ]
+   ],
+   "tablas": []
+  }
+ ],
+ "pendientes": [
+  {
+   "provincia": "Buenos Aires",
+   "nota": "Prefederal bonaerense: se está cerrando la fase regular por zonas y vienen los playoffs por el título."
+  },
+  {
+   "provincia": "FeBAMBA (CABA y Gran Buenos Aires)",
+   "nota": "Prefederal con 48 equipos en cuatro zonas de 12."
+  },
+  {
+   "provincia": "Santa Fe",
+   "nota": "Lo juega cada asociación (Santafesina, Rosarina, Venadense y otras)."
+  },
+  {
+   "provincia": "Chubut (Comodoro Rivadavia)",
+   "nota": "Etapa asociativa de Comodoro Rivadavia: final entre Gimnasia y La Fede Deportiva."
+  },
+  {
+   "provincia": "Catamarca",
+   "nota": ""
+  },
+  {
+   "provincia": "Corrientes",
+   "nota": ""
+  },
+  {
+   "provincia": "Formosa",
+   "nota": ""
+  },
+  {
+   "provincia": "Tucumán",
+   "nota": ""
+  },
+  {
+   "provincia": "Salta",
+   "nota": ""
+  },
+  {
+   "provincia": "Jujuy",
+   "nota": ""
+  },
+  {
+   "provincia": "La Rioja",
+   "nota": ""
+  },
+  {
+   "provincia": "Mendoza",
+   "nota": ""
+  },
+  {
+   "provincia": "San Juan",
+   "nota": ""
+  },
+  {
+   "provincia": "San Luis",
+   "nota": ""
+  },
+  {
+   "provincia": "Río Negro (resto de la provincia)",
+   "nota": ""
+  },
+  {
+   "provincia": "Santa Cruz",
+   "nota": ""
+  },
+  {
+   "provincia": "Tierra del Fuego",
+   "nota": ""
+  }
+ ]
 }
